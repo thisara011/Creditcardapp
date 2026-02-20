@@ -1,0 +1,357 @@
+import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import ProductSelection from './components/ProductSelection';
+import PersonalDetails from './components/PersonalDetails';
+import ContactResidence from './components/ContactResidence';
+import EmploymentFinancials from './components/EmploymentFinancials';
+import JointApplicantsReferees from './components/JointApplicantsReferees';
+import Preferences from './components/Preferences';
+import Declaration from './components/Declaration';
+import seylanLogo from 'figma:asset/132041194bd3ff5904e596a3b127b141748144f5.png';
+
+export interface FormData {
+  // Step 1: Product Selection
+  cardType: string;
+  requestedCreditLimit: number;
+  
+  // Step 2: Personal Identification
+  identityType: 'NIC' | 'Passport' | '';
+  nicNumber: string;
+  passportNumber: string;
+  passportExpiry: string;
+  visaNumber: string;
+  visaType: string;
+  visaExpiry: string;
+  title: string;
+  fullName: string;
+  nameOnCard: string;
+  mothersMaidenName: string;
+  dateOfBirth: string;
+  mobileNumber: string;
+  emailAddress: string;
+  
+  // Step 2: Addresses (collected once)
+  homeAddressLine: string;
+  homeDistrict: string;
+  correspondenceAddressLine: string;
+  correspondenceDistrict: string;
+  workAddressLine: string;
+  workDistrict: string;
+  cardDeliveryLocation: string;
+  cardDeliveryBranch: string;
+  
+  // Step 3: Employment & Income
+  employmentSector: string;
+  natureOfBusiness: string;
+  natureOfBusinessOther: string;
+  fieldOfEmployment: string;
+  designation: string;
+  lengthOfEmployment: number;
+  employerName: string;
+  employerAddress: string;
+  prevEmployerName: string;
+  prevEmployerAddress: string;
+  prevLengthOfService: number;
+  prevDesignation: string;
+  netMonthlyIncome: number;
+  otherIncome: number;
+  otherIncomeSource: string;
+  
+  // Step 3: PEP/EDD
+  isPEP: string;
+  pepNatureOfRelationship: string;
+  pepFormUpload: string;
+  
+  // Step 4: Supplementary Card
+  requireSupplementaryCard: string;
+  suppTitle: string;
+  suppFullName: string;
+  suppMothersMaidenName: string;
+  suppNameOnCard: string;
+  suppDateOfBirth: string;
+  suppIdentityType: string;
+  suppNICNumber: string;
+  suppPassportNumber: string;
+  suppPassportExpiry: string;
+  suppVisaNumber: string;
+  suppVisaType: string;
+  suppVisaExpiry: string;
+  suppRelationship: string;
+  suppHomeAddress: string;
+  suppTelephone: string;
+  suppRequestedCreditLimit: number;
+  suppSignature: string;
+  
+  // Step 4: Referees (removed joint applicant, keeping 2 referees)
+  referee1Name: string;
+  referee1NIC: string;
+  referee1Mobile: string;
+  referee1Relationship: string;
+  referee2Name: string;
+  referee2NIC: string;
+  referee2Mobile: string;
+  referee2Relationship: string;
+  
+  // Step 5: Auto-Settlement
+  autoSettlement: string;
+  settlementAccountNumber: string;
+  settlementBranch: string;
+  settlementPaymentOption: string;
+  
+  // Step 5: Value-Added Services
+  valueAddedServices: string;
+  vasWrittenRequestUpload: string;
+  paperStatementAddress: string;
+  
+  // Step 5: Personal Assistant Authorization
+  requirePA: string;
+  paName: string;
+  paNIC: string;
+  paAddress: string;
+  paContactNumber: string;
+  paEmail: string;
+  paAuthorizationConsent: boolean;
+  
+  // Step 6: Signatures & Declaration
+  primarySignature: string;
+  declarationConsent: boolean;
+  signatureDate: string;
+}
+
+export default function App() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<FormData>({
+    cardType: '',
+    requestedCreditLimit: 100000,
+    identityType: '',
+    nicNumber: '',
+    passportNumber: '',
+    passportExpiry: '',
+    visaNumber: '',
+    visaType: '',
+    visaExpiry: '',
+    title: '',
+    fullName: '',
+    nameOnCard: '',
+    mothersMaidenName: '',
+    dateOfBirth: '',
+    mobileNumber: '',
+    emailAddress: '',
+    homeAddressLine: '',
+    homeDistrict: '',
+    correspondenceAddressLine: '',
+    correspondenceDistrict: '',
+    workAddressLine: '',
+    workDistrict: '',
+    cardDeliveryLocation: '',
+    cardDeliveryBranch: '',
+    employmentSector: '',
+    natureOfBusiness: '',
+    natureOfBusinessOther: '',
+    fieldOfEmployment: '',
+    designation: '',
+    lengthOfEmployment: 0,
+    employerName: '',
+    employerAddress: '',
+    prevEmployerName: '',
+    prevEmployerAddress: '',
+    prevLengthOfService: 0,
+    prevDesignation: '',
+    netMonthlyIncome: 0,
+    otherIncome: 0,
+    otherIncomeSource: '',
+    isPEP: '',
+    pepNatureOfRelationship: '',
+    pepFormUpload: '',
+    requireSupplementaryCard: '',
+    suppTitle: '',
+    suppFullName: '',
+    suppMothersMaidenName: '',
+    suppNameOnCard: '',
+    suppDateOfBirth: '',
+    suppIdentityType: '',
+    suppNICNumber: '',
+    suppPassportNumber: '',
+    suppPassportExpiry: '',
+    suppVisaNumber: '',
+    suppVisaType: '',
+    suppVisaExpiry: '',
+    suppRelationship: '',
+    suppHomeAddress: '',
+    suppTelephone: '',
+    suppRequestedCreditLimit: 0,
+    suppSignature: '',
+    referee1Name: '',
+    referee1NIC: '',
+    referee1Mobile: '',
+    referee1Relationship: '',
+    referee2Name: '',
+    referee2NIC: '',
+    referee2Mobile: '',
+    referee2Relationship: '',
+    autoSettlement: '',
+    settlementAccountNumber: '',
+    settlementBranch: '',
+    settlementPaymentOption: '',
+    valueAddedServices: '',
+    vasWrittenRequestUpload: '',
+    paperStatementAddress: '',
+    requirePA: '',
+    paName: '',
+    paNIC: '',
+    paAddress: '',
+    paContactNumber: '',
+    paEmail: '',
+    paAuthorizationConsent: false,
+    primarySignature: '',
+    declarationConsent: false,
+    signatureDate: new Date().toLocaleDateString('en-GB'),
+  });
+
+  const totalSteps = 6;
+
+  const updateFormData = (data: Partial<FormData>) => {
+    setFormData(prev => ({ ...prev, ...data }));
+  };
+
+  const nextStep = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return <ProductSelection formData={formData} updateFormData={updateFormData} />;
+      case 2:
+        return (
+          <div className="space-y-8">
+            <PersonalDetails formData={formData} updateFormData={updateFormData} />
+            <ContactResidence formData={formData} updateFormData={updateFormData} />
+          </div>
+        );
+      case 3:
+        return <EmploymentFinancials formData={formData} updateFormData={updateFormData} />;
+      case 4:
+        return <JointApplicantsReferees formData={formData} updateFormData={updateFormData} />;
+      case 5:
+        return <Preferences formData={formData} updateFormData={updateFormData} />;
+      case 6:
+        return <Declaration formData={formData} updateFormData={updateFormData} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-[#C8102E] text-white py-6 px-4 shadow-md">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <img 
+                src={seylanLogo} 
+                alt="Seylan Bank" 
+                className="h-12 md:h-16 w-auto bg-white px-3 py-2 rounded"
+              />
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">Seylan Bank</h1>
+                <p className="text-xs md:text-sm mt-1 italic">"we take you Places"</p>
+              </div>
+            </div>
+            <div className="text-right hidden md:block">
+              <p className="text-sm font-semibold">Digital Credit Card Application</p>
+              <p className="text-xs mt-1 opacity-90">Secure & Fast</p>
+            </div>
+          </div>
+          <p className="text-xs mt-3 md:hidden text-center">Digital Credit Card Application</p>
+        </div>
+      </header>
+
+      {/* Progress Bar */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between mb-4">
+            {[1, 2, 3, 4, 5, 6].map((step) => (
+              <React.Fragment key={step}>
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                      step < currentStep
+                        ? 'bg-green-500 text-white'
+                        : step === currentStep
+                        ? 'bg-[#C8102E] text-white'
+                        : 'bg-gray-200 text-gray-400'
+                    }`}
+                  >
+                    {step < currentStep ? <Check size={20} /> : step}
+                  </div>
+                  <span className="text-xs mt-2 text-center hidden md:block">
+                    {step === 1 && 'Card Selection'}
+                    {step === 2 && 'Personal & Address'}
+                    {step === 3 && 'Employment'}
+                    {step === 4 && 'Supplementary'}
+                    {step === 5 && 'Preferences'}
+                    {step === 6 && 'Declaration'}
+                  </span>
+                </div>
+                {step < 6 && (
+                  <div
+                    className={`flex-1 h-1 mx-2 ${
+                      step < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                    }`}
+                  />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Form Content */}
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+          {renderStep()}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
+            <button
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft size={20} />
+              Previous
+            </button>
+            <button
+              onClick={nextStep}
+              disabled={currentStep === totalSteps}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#C8102E] text-white hover:bg-[#A00D24] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {currentStep === totalSteps ? 'Complete' : 'Next'}
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-6 px-4 mt-12">
+        <div className="max-w-4xl mx-auto text-center text-sm">
+          <p>&copy; 2026 Seylan Bank. All rights reserved.</p>
+          <p className="mt-2 text-gray-400">Secure Application Process | Your data is protected</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
