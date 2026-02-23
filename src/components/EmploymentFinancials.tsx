@@ -1,5 +1,5 @@
 import React from 'react';
-import { Briefcase, DollarSign, AlertCircle, Upload } from 'lucide-react';
+import { Briefcase, DollarSign, AlertCircle, Upload, MapPin } from 'lucide-react';
 import { FormData } from '../App';
 
 interface Props {
@@ -277,6 +277,79 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
             placeholder="e.g., Rental income, Investments, Business"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
           />
+        </div>
+
+        {/* Work Address & Office Contact (moved from Address Details) */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <MapPin size={20} className="text-[#C8102E]" />
+            Work Address & Office Contact
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Work Address Line <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                value={formData.workAddressLine}
+                onChange={(e) => updateFormData({ workAddressLine: e.target.value })}
+                placeholder="Enter work/office address"
+                rows={3}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Office Contact Number
+              </label>
+              <input
+                type="tel"
+                value={formData.officeContactNumber}
+                onChange={(e) => updateFormData({ officeContactNumber: e.target.value })}
+                placeholder="e.g., 0112XXXXXX"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Card Delivery Location (moved from Address Details) */}
+        <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+          <h3 className="font-semibold text-gray-900 mb-4">Card Delivery Location</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Deliver Card To <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={formData.cardDeliveryLocation}
+                onChange={(e) => updateFormData({ cardDeliveryLocation: e.target.value })}
+                aria-label="Card delivery location"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+              >
+                <option value="">Select Delivery Location</option>
+                <option value="Home Address">Permanent Address</option>
+                <option value="Correspondence Address">Correspondence Address</option>
+                <option value="Office Address">Office Address</option>
+                <option value="Branch">Branch</option>
+              </select>
+            </div>
+
+            {formData.cardDeliveryLocation === 'Branch' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Branch <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.cardDeliveryBranch}
+                  onChange={(e) => updateFormData({ cardDeliveryBranch: e.target.value })}
+                  placeholder="Enter branch name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* PEP/EDD Section */}

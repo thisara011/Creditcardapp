@@ -1,5 +1,4 @@
 import React from 'react';
-import { CreditCard } from 'lucide-react';
 import { FormData } from '../App';
 
 interface Props {
@@ -47,27 +46,6 @@ export default function ProductSelection({ formData, updateFormData }: Props) {
           <p className="text-xs text-gray-500">Minimum credit limit: LKR 50,000</p>
         </div>
       </div>
-
-      {/* Card Preview */}
-      {formData.cardType && (
-        <div className="mt-8 p-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl">
-          <div className="flex items-center gap-4">
-            <div className={`p-4 rounded-lg ${
-              formData.cardType === 'Visa Signature' 
-                ? 'bg-gradient-to-br from-purple-500 to-purple-700' 
-                : 'bg-gradient-to-br from-red-500 to-red-700'
-            }`}>
-              <CreditCard className="text-white" size={40} />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 text-lg">{formData.cardType}</h3>
-              <p className="text-gray-600 text-sm mt-1">
-                Requested Limit: LKR {formData.requestedCreditLimit.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

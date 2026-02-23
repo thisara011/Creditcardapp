@@ -1,5 +1,5 @@
-import React from 'react';
-import { FileText, CheckCircle2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { FileText, CheckCircle2, CheckCircle, XCircle, Camera, FolderOpen } from 'lucide-react';
 import { FormData } from '../App';
 import SignaturePad from './SignaturePad';
 
@@ -9,6 +9,101 @@ interface Props {
 }
 
 export default function Declaration({ formData, updateFormData }: Props) {
+  const individualDocs: { key: keyof FormData; label: string }[] = [
+    { key: 'indNicCopy', label: 'Customer National Identity Card (NIC)' },
+    { key: 'indSalarySlips', label: 'Salary slips' },
+    { key: 'indConditionChecklist', label: 'Condition check list' },
+    { key: 'indGuarantorNic', label: 'NIC of a Non-Related (NR) person (Guarantor/Reference)' },
+    { key: 'indAddressProof', label: 'Address proof (if current address differs from NIC)' },
+    { key: 'indCribReports', label: 'CRIB reports' },
+  ];
+
+  const businessDocs: { key: keyof FormData; label: string; helper?: string }[] = [
+    { key: 'bizNicCopy', label: 'Customer National Identity Card (NIC)' },
+    { key: 'bizBusinessReg', label: 'Business Registration' },
+    { key: 'bizBusinessCrib', label: 'Business CRIB document' },
+    {
+      key: 'bizBankStatements',
+      label: 'Bank Statements',
+      helper: 'Take last 6 months from other banks for new customers (not required for existing customers).',
+    },
+    { key: 'bizCardApplicationReview', label: 'Card Application Review Form' },
+    { key: 'bizCribReports', label: 'CRIB reports (Individual / Directors)' },
+  ];
+
+  const activeDocs = formData.applicationType === 'Business' ? businessDocs : individualDocs;
+
+  // Shared file handler
+  const handleFile = (key: keyof FormData, file: File) => {
+    if (!file) return;
+    updateFormData({ [key]: file.name } as Partial<FormData>);
+  };
+
+  const handleFileSelect = (key: keyof FormData, files: FileList | null) => {
+    if (!files || !files[0]) return;
+    handleFile(key, files[0]);
+  };
+
+  // Camera capture state
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraDocKey, setCameraDocKey] = useState<keyof FormData | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+  };
+
+  const closeCamera = () => {
+    stopCamera();
+    setCameraOpen(false);
+    setCameraDocKey(null);
+  };
+
+  const openCamera = async (key: keyof FormData) => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
+      setCameraDocKey(key);
+      setCameraOpen(true);
+    } catch (err) {
+      console.error('Unable to access camera', err);
+    }
+  };
+
+  useEffect(() => {
+    if (!cameraOpen || !streamRef.current || !videoRef.current) return;
+    videoRef.current.srcObject = streamRef.current;
+  }, [cameraOpen]);
+
+  const handleCameraCapture = () => {
+    if (!cameraDocKey || !videoRef.current) return;
+    const video = videoRef.current;
+    const canvas = document.createElement('canvas');
+    const width = video.videoWidth || 1280;
+    const height = video.videoHeight || 720;
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, width, height);
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) return;
+        const file = new File([blob], `captured-${cameraDocKey}-${Date.now()}.jpg`, {
+          type: 'image/jpeg',
+        });
+        handleFile(cameraDocKey, file);
+        closeCamera();
+      },
+      'image/jpeg',
+      0.9
+    );
+  };
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-2">
@@ -18,6 +113,183 @@ export default function Declaration({ formData, updateFormData }: Props) {
       <p className="text-gray-600 mb-6">Please review and sign the declaration to complete your application</p>
 
       <div className="space-y-6">
+        {/* Camera capture modal */}
+        {cameraOpen && (
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-4 space-y-4">
+              <h3 className="text-base font-semibold text-gray-900">
+                Capture document photo
+              </h3>
+              <div className="rounded-md overflow-hidden bg-black">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full h-64 object-contain bg-black"
+                />
+              </div>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={closeCamera}
+                  className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCameraCapture}
+                  className="px-4 py-2 text-sm rounded-md bg-[#C8102E] text-white hover:bg-[#A00D24]"
+                >
+                  Capture & Use
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Application Type & Support Documents */}
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <FileText size={20} className="text-[#C8102E]" />
+            Application Type & Support Documents
+          </h3>
+
+          <div className="mb-4">
+            <p className="text-sm font-medium text-gray-700 mb-2">
+              Select Application Type <span className="text-red-500">*</span>
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <label className="inline-flex items-center gap-2 text-sm text-gray-800 cursor-pointer">
+                <input
+                  type="radio"
+                  name="applicationType"
+                  value="Individual"
+                  checked={formData.applicationType === 'Individual'}
+                  onChange={(e) => updateFormData({ applicationType: e.target.value as FormData['applicationType'] })}
+                  className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                />
+                <span>Individual Applicant</span>
+              </label>
+              <label className="inline-flex items-center gap-2 text-sm text-gray-800 cursor-pointer">
+                <input
+                  type="radio"
+                  name="applicationType"
+                  value="Business"
+                  checked={formData.applicationType === 'Business'}
+                  onChange={(e) => updateFormData({ applicationType: e.target.value as FormData['applicationType'] })}
+                  className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                />
+                <span>Business Applicant</span>
+              </label>
+            </div>
+          </div>
+
+          {formData.applicationType && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold text-gray-800">
+                  {formData.applicationType === 'Business'
+                    ? 'Required Business Applicant Documents'
+                    : 'Required Individual Applicant Documents'}
+                </p>
+                <p className="text-xs text-gray-500 flex items-center gap-1">
+                  <CheckCircle className="text-green-500" size={14} />
+                  Uploaded&nbsp;&nbsp;
+                  <XCircle className="text-red-500" size={14} />
+                  Pending
+                </p>
+              </div>
+
+              <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <table className="min-w-full divide-y divide-gray-200 text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left font-medium text-gray-700">Document</th>
+                      <th className="px-4 py-2 text-center font-medium text-gray-700">Status</th>
+                      <th className="px-4 py-2 text-left font-medium text-gray-700">File & Upload</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 bg-white">
+                    {activeDocs.map((doc) => {
+                      const value = formData[doc.key] as string;
+                      const uploaded = Boolean(value);
+                      return (
+                        <tr key={doc.key as string}>
+                          <td className="px-4 py-3 align-top">
+                            <div className="text-gray-900">{doc.label}</div>
+                            {doc.helper && (
+                              <p className="text-xs text-gray-500 mt-1">{doc.helper}</p>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 align-top text-center">
+                            {uploaded ? (
+                              <CheckCircle className="text-green-500 inline-block" size={20} />
+                            ) : (
+                              <XCircle className="text-red-400 inline-block" size={20} />
+                            )}
+                          </td>
+                          <td className="px-4 py-3 align-top">
+                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                              <div>
+                                {uploaded ? (
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
+                                    {value}
+                                  </span>
+                                ) : (
+                                  <span className="text-xs text-gray-400 italic">No file uploaded</span>
+                                )}
+                              </div>
+
+                              <div className="flex items-center justify-end gap-2">
+                              {/* Camera icon: open camera capture (mobile-supported browsers) */}
+                              <button
+                                type="button"
+                                title="Open camera"
+                                aria-label="Open camera to capture document"
+                                onClick={() => openCamera(doc.key)}
+                                className={`inline-flex items-center justify-center w-10 h-9 rounded-md cursor-pointer transition-colors ${
+                                  uploaded
+                                    ? 'bg-red-600 text-white hover:bg-red-700'
+                                    : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
+                                }`}
+                              >
+                                <Camera size={18} />
+                              </button>
+
+                              {/* Folder icon: open file picker (PDF/images) */}
+                              <label
+                                title="Choose from device"
+                                aria-label="Choose document from device"
+                                className={`inline-flex items-center justify-center w-10 h-9 rounded-md cursor-pointer transition-colors ${
+                                  uploaded
+                                    ? 'bg-red-600 text-white hover:bg-red-700'
+                                    : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
+                                }`}
+                              >
+                                <FolderOpen size={18} />
+                                <input
+                                  type="file"
+                                  accept=".pdf,image/*"
+                                  className="hidden"
+                                  onChange={(e) => handleFileSelect(doc.key, e.target.files)}
+                                />
+                              </label>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                You can upload clear photos (via camera) or files from your device (PDF / images). Ensure all information is readable.
+              </p>
+            </div>
+          )}
+        </div>
+
         {/* Declaration Text */}
         <div className="bg-white p-6 rounded-lg border-2 border-red-200 max-h-96 overflow-y-auto">
           <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">

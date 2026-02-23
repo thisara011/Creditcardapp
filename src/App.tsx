@@ -33,6 +33,7 @@ export interface FormData {
   // Step 2: Addresses (collected once)
   homeAddressLine: string;
   homeDistrict: string;
+  correspondenceAddressDifferent: boolean;
   correspondenceAddressLine: string;
   correspondenceDistrict: string;
   workAddressLine: string;
@@ -49,6 +50,7 @@ export interface FormData {
   lengthOfEmployment: number;
   employerName: string;
   employerAddress: string;
+  officeContactNumber: string;
   prevEmployerName: string;
   prevEmployerAddress: string;
   prevLengthOfService: number;
@@ -112,7 +114,24 @@ export interface FormData {
   paEmail: string;
   paAuthorizationConsent: boolean;
   
-  // Step 6: Signatures & Declaration
+  // Step 6: Application Type & Support Documents
+  applicationType: 'Individual' | 'Business' | '';
+  // Individual applicant documents
+  indNicCopy: string;
+  indSalarySlips: string;
+  indConditionChecklist: string;
+  indGuarantorNic: string;
+  indAddressProof: string;
+  indCribReports: string;
+  // Business applicant documents
+  bizNicCopy: string;
+  bizBusinessReg: string;
+  bizBusinessCrib: string;
+  bizBankStatements: string;
+  bizCardApplicationReview: string;
+  bizCribReports: string;
+
+  // Step 7: Signatures & Declaration
   primarySignature: string;
   declarationConsent: boolean;
   signatureDate: string;
@@ -139,6 +158,7 @@ export default function App() {
     emailAddress: '',
     homeAddressLine: '',
     homeDistrict: '',
+    correspondenceAddressDifferent: false,
     correspondenceAddressLine: '',
     correspondenceDistrict: '',
     workAddressLine: '',
@@ -153,6 +173,7 @@ export default function App() {
     lengthOfEmployment: 0,
     employerName: '',
     employerAddress: '',
+    officeContactNumber: '',
     prevEmployerName: '',
     prevEmployerAddress: '',
     prevLengthOfService: 0,
@@ -203,6 +224,19 @@ export default function App() {
     paContactNumber: '',
     paEmail: '',
     paAuthorizationConsent: false,
+    applicationType: '',
+    indNicCopy: '',
+    indSalarySlips: '',
+    indConditionChecklist: '',
+    indGuarantorNic: '',
+    indAddressProof: '',
+    indCribReports: '',
+    bizNicCopy: '',
+    bizBusinessReg: '',
+    bizBusinessCrib: '',
+    bizBankStatements: '',
+    bizCardApplicationReview: '',
+    bizCribReports: '',
     primarySignature: '',
     declarationConsent: false,
     signatureDate: new Date().toLocaleDateString('en-GB'),

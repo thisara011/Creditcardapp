@@ -126,10 +126,10 @@ export default function PersonalDetails({ formData, updateFormData }: Props) {
           />
         </div>
 
-        {/* Email Address */}
+        {/* Personal Email Address */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email Address <span className="text-red-500">*</span>
+            Personal Email Address <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
