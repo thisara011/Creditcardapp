@@ -32,7 +32,9 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
         <UserPlus className="text-[#C8102E]" size={28} />
         <h2 className="text-2xl font-bold text-gray-900">Supplementary Card & Referees</h2>
       </div>
-      <p className="text-gray-600 mb-6">Supplementary cardholder and reference details</p>
+      <p className="text-gray-600 mb-6">
+        First provide details for any supplementary card, then details of relatives not living with you.
+      </p>
 
       <div className="space-y-8">
         {/* Supplementary Card Request */}
@@ -352,12 +354,12 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
         <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
           <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Users size={20} />
-            Relatives Information
+            Details of a Relative Not Living With You
           </h3>
           
           {/* Relative 1 */}
           <div className="mb-6">
-            <h4 className="font-medium text-gray-800 mb-3">A relative not living with you 1</h4>
+            <h4 className="font-medium text-gray-800 mb-3">Relative 1</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -385,6 +387,18 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Home Telephone Number
+                </label>
+                <input
+                  type="tel"
+                  value={formData.referee1HomeTelephone}
+                  onChange={(e) => updateFormData({ referee1HomeTelephone: e.target.value })}
+                  placeholder="Home telephone number"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Mobile Number <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -392,6 +406,18 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                   value={formData.referee1Mobile}
                   onChange={(e) => updateFormData({ referee1Mobile: e.target.value })}
                   placeholder="Mobile number"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Address <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={formData.referee1Address}
+                  onChange={(e) => updateFormData({ referee1Address: e.target.value })}
+                  placeholder="Relative's address"
+                  rows={2}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                 />
               </div>
@@ -412,7 +438,7 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
 
           {/* Relative 2 */}
           <div className="pt-4 border-t border-blue-200">
-            <h4 className="font-medium text-gray-800 mb-3">A relative not living with you 2</h4>
+            <h4 className="font-medium text-gray-800 mb-3">Relative 2</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -440,6 +466,18 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Home Telephone Number
+                </label>
+                <input
+                  type="tel"
+                  value={formData.referee2HomeTelephone}
+                  onChange={(e) => updateFormData({ referee2HomeTelephone: e.target.value })}
+                  placeholder="Home telephone number"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Mobile Number
                 </label>
                 <input
@@ -447,6 +485,18 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                   value={formData.referee2Mobile}
                   onChange={(e) => updateFormData({ referee2Mobile: e.target.value })}
                   placeholder="Mobile number"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Address
+                </label>
+                <textarea
+                  value={formData.referee2Address}
+                  onChange={(e) => updateFormData({ referee2Address: e.target.value })}
+                  placeholder="Relative's address"
+                  rows={2}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                 />
               </div>
@@ -459,7 +509,7 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                   value={formData.referee2Relationship}
                   onChange={(e) => updateFormData({ referee2Relationship: e.target.value })}
                   placeholder="e.g., Brother, Sister, Cousin"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus-border-transparent"
                 />
               </div>
             </div>

@@ -89,10 +89,14 @@ export interface FormData {
   referee1NIC: string;
   referee1Mobile: string;
   referee1Relationship: string;
+  referee1Address: string;
+  referee1HomeTelephone: string;
   referee2Name: string;
   referee2NIC: string;
   referee2Mobile: string;
   referee2Relationship: string;
+  referee2Address: string;
+  referee2HomeTelephone: string;
   
   // Step 5: Auto-Settlement
   autoSettlement: string;
@@ -104,6 +108,7 @@ export interface FormData {
   valueAddedServices: string;
   vasWrittenRequestUpload: string;
   paperStatementAddress: string;
+  selectedVAS: string[];
   
   // Step 5: Personal Assistant Authorization
   requirePA: string;
@@ -206,10 +211,14 @@ export default function App() {
     referee1NIC: '',
     referee1Mobile: '',
     referee1Relationship: '',
+    referee1Address: '',
+    referee1HomeTelephone: '',
     referee2Name: '',
     referee2NIC: '',
     referee2Mobile: '',
     referee2Relationship: '',
+    referee2Address: '',
+    referee2HomeTelephone: '',
     autoSettlement: '',
     settlementAccountNumber: '',
     settlementBranch: '',
@@ -217,6 +226,7 @@ export default function App() {
     valueAddedServices: '',
     vasWrittenRequestUpload: '',
     paperStatementAddress: '',
+    selectedVAS: [],
     requirePA: '',
     paName: '',
     paNIC: '',

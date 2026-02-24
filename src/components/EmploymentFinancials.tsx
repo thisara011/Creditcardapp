@@ -1,6 +1,7 @@
 import React from 'react';
 import { Briefcase, DollarSign, AlertCircle, Upload, MapPin } from 'lucide-react';
 import { FormData } from '../App';
+import SearchableBranchSelect from './SearchableBranchSelect';
 
 interface Props {
   formData: FormData;
@@ -25,7 +26,28 @@ const fieldsOfEmployment = [
 ];
 
 export default function EmploymentFinancials({ formData, updateFormData }: Props) {
+  // Store total length in years as a decimal in formData, but show separate Years + Months inputs in the UI
+  const currentYears = Math.floor(formData.lengthOfEmployment || 0);
+  const currentMonths = Math.round(((formData.lengthOfEmployment || 0) - currentYears) * 12);
+
+  const prevYears = Math.floor(formData.prevLengthOfService || 0);
+  const prevMonths = Math.round(((formData.prevLengthOfService || 0) - prevYears) * 12);
+
   const showPreviousEmployment = formData.lengthOfEmployment < 1;
+
+  const handleCurrentLengthChange = (years: number, months: number) => {
+    const safeYears = Math.max(0, years);
+    const safeMonths = Math.min(11, Math.max(0, months));
+    const totalYears = safeYears + safeMonths / 12;
+    updateFormData({ lengthOfEmployment: totalYears });
+  };
+
+  const handlePrevLengthChange = (years: number, months: number) => {
+    const safeYears = Math.max(0, years);
+    const safeMonths = Math.min(11, Math.max(0, months));
+    const totalYears = safeYears + safeMonths / 12;
+    updateFormData({ prevLengthOfService: totalYears });
+  };
 
   return (
     <div>
@@ -148,18 +170,34 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
         {/* Length of Current Employment */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Length of Current Employment (Years) <span className="text-red-500">*</span>
+            Length of Current Employment (Years and Months) <span className="text-red-500">*</span>
           </label>
-          <input
-            type="number"
-            value={formData.lengthOfEmployment}
-            onChange={(e) => updateFormData({ lengthOfEmployment: Number(e.target.value) })}
-            min="0"
-            step="0.1"
-            placeholder="e.g., 2.5"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-          />
-          <p className="text-xs text-gray-500 mt-1">Enter decimal values for months (e.g., 0.5 for 6 months)</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Years</label>
+              <input
+                type="number"
+                min={0}
+                value={currentYears}
+                onChange={(e) => handleCurrentLengthChange(Number(e.target.value || 0), currentMonths)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Months</label>
+              <input
+                type="number"
+                min={0}
+                max={11}
+                value={currentMonths}
+                onChange={(e) => handleCurrentLengthChange(currentYears, Number(e.target.value || 0))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            If you have worked less than 1 year here, previous employment details will be required.
+          </p>
         </div>
 
         {/* Previous Employment (if < 1 year) */}
@@ -204,17 +242,31 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Length of Service (Years) <span className="text-red-500">*</span>
+                  Length of Service (Years and Months) <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="number"
-                  value={formData.prevLengthOfService}
-                  onChange={(e) => updateFormData({ prevLengthOfService: Number(e.target.value) })}
-                  min="0"
-                  step="0.1"
-                  placeholder="e.g., 1.5"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-                />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Years</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={prevYears}
+                      onChange={(e) => handlePrevLengthChange(Number(e.target.value || 0), prevMonths)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Months</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={11}
+                      value={prevMonths}
+                      onChange={(e) => handlePrevLengthChange(prevYears, Number(e.target.value || 0))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                    />
+                  </div>
+                </div>
               </div>
               
               <div>
@@ -340,12 +392,10 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Select Branch <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <SearchableBranchSelect
                   value={formData.cardDeliveryBranch}
-                  onChange={(e) => updateFormData({ cardDeliveryBranch: e.target.value })}
-                  placeholder="Enter branch name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                  onChange={(branch) => updateFormData({ cardDeliveryBranch: branch })}
+                  placeholder="Search and select branch"
                 />
               </div>
             )}

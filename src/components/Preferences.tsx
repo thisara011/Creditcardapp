@@ -1,6 +1,7 @@
 import React from 'react';
 import { Settings, DollarSign, UserCheck } from 'lucide-react';
 import { FormData } from '../App';
+import SearchableBranchSelect from './SearchableBranchSelect';
 
 interface Props {
   formData: FormData;
@@ -11,6 +12,26 @@ export default function Preferences({ formData, updateFormData }: Props) {
   const showSettlementFields = formData.autoSettlement === 'Yes';
   const showVASFields = formData.valueAddedServices === 'Not Need';
   const showPAFields = formData.requirePA === 'Yes';
+
+  const vasOptions = [
+    'SMS alerts',
+    'Transaction alerts',
+    'Monthly payment reminders',
+    'PDF e-Statements',
+    'Mobile & internet banking services',
+  ];
+
+  const toggleVASOption = (option: string) => {
+    const current = formData.selectedVAS || [];
+    const exists = current.includes(option);
+    const next = exists ? current.filter((o) => o !== option) : [...current, option];
+    updateFormData({ selectedVAS: next });
+  };
+
+  const toggleAllVAS = () => {
+    const allSelected = vasOptions.every((o) => formData.selectedVAS?.includes(o));
+    updateFormData({ selectedVAS: allSelected ? [] : vasOptions });
+  };
 
   return (
     <div>
@@ -76,14 +97,12 @@ export default function Preferences({ formData, updateFormData }: Props) {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Branch <span className="text-red-500">*</span>
+                    Account Holding Branch <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <SearchableBranchSelect
                     value={formData.settlementBranch}
-                    onChange={(e) => updateFormData({ settlementBranch: e.target.value })}
-                    placeholder="Enter branch name"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                    onChange={(branch) => updateFormData({ settlementBranch: branch })}
+                    placeholder="Search and select account holding branch"
                   />
                 </div>
                 
@@ -114,19 +133,6 @@ export default function Preferences({ formData, updateFormData }: Props) {
           </h3>
           
           <div className="space-y-4">
-            <div className="bg-white p-4 rounded-lg border border-blue-200">
-              <p className="text-sm text-gray-700 mb-2">
-                <strong>By default, the Bank provides:</strong>
-              </p>
-              <ul className="text-sm text-gray-600 space-y-1 ml-4 list-disc">
-                <li>SMS alerts</li>
-                <li>Transaction alerts</li>
-                <li>Monthly payment reminders</li>
-                <li>PDF e-Statements</li>
-                <li>Mobile & internet banking services</li>
-              </ul>
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Value Added Services <span className="text-red-500">*</span>
@@ -156,6 +162,36 @@ export default function Preferences({ formData, updateFormData }: Props) {
                 </label>
               </div>
             </div>
+
+            {formData.valueAddedServices === 'Need' && (
+              <div className="bg-white p-4 rounded-lg border border-blue-200">
+                <p className="text-sm text-gray-700 mb-3">
+                  <strong>Value-Added Services provided by the Bank:</strong>
+                </p>
+                <div className="space-y-2">
+                  {vasOptions.map((opt) => (
+                    <label key={opt} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedVAS?.includes(opt) ?? false}
+                        onChange={() => toggleVASOption(opt)}
+                        className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                      />
+                      <span>{opt}</span>
+                    </label>
+                  ))}
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-800 cursor-pointer pt-2 border-t border-blue-100 mt-2">
+                    <input
+                      type="checkbox"
+                      checked={vasOptions.every((opt) => formData.selectedVAS?.includes(opt))}
+                      onChange={toggleAllVAS}
+                      className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                    />
+                    <span>Select All</span>
+                  </label>
+                </div>
+              </div>
+            )}
 
             {showVASFields && (
               <div className="space-y-4 mt-4 pt-4 border-t border-blue-200">
