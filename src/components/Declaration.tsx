@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FileText, CheckCircle2, CheckCircle, XCircle, Camera, FolderOpen } from 'lucide-react';
+import { Camera, CheckCircle, CheckCircle2, FileText, FolderOpen, SwitchCamera, Trash2, XCircle } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { FormData } from '../App';
 import SignaturePad from './SignaturePad';
 
@@ -47,6 +47,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
   // Camera capture state
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraDocKey, setCameraDocKey] = useState<keyof FormData | null>(null);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment'); // Start with back camera
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -61,16 +62,29 @@ export default function Declaration({ formData, updateFormData }: Props) {
     stopCamera();
     setCameraOpen(false);
     setCameraDocKey(null);
+    setFacingMode('environment'); // Reset to back camera for next time
   };
 
-  const openCamera = async (key: keyof FormData) => {
+  const openCamera = async (key: keyof FormData, preferredFacingMode: 'user' | 'environment' = 'environment') => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stopCamera(); // Stop any existing stream
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: preferredFacingMode }
+      });
       streamRef.current = stream;
       setCameraDocKey(key);
+      setFacingMode(preferredFacingMode);
       setCameraOpen(true);
     } catch (err) {
       console.error('Unable to access camera', err);
+      alert('Unable to access camera. Please check permissions.');
+    }
+  };
+
+  const switchCamera = () => {
+    const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
+    if (cameraDocKey) {
+      openCamera(cameraDocKey, newFacingMode);
     }
   };
 
@@ -120,13 +134,23 @@ export default function Declaration({ formData, updateFormData }: Props) {
               <h3 className="text-base font-semibold text-gray-900">
                 Capture document photo
               </h3>
-              <div className="rounded-md overflow-hidden bg-black">
+              <div className="rounded-md overflow-hidden bg-black relative">
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
                   className="w-full h-64 object-contain bg-black"
                 />
+                {/* Switch Camera Button */}
+                <button
+                  type="button"
+                  onClick={switchCamera}
+                  className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors"
+                  title="Switch camera"
+                  aria-label="Switch between front and back camera"
+                >
+                  <SwitchCamera size={20} className="text-gray-700" />
+                </button>
               </div>
               <div className="flex justify-end gap-3">
                 <button
@@ -229,7 +253,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                             )}
                           </td>
                           <td className="px-4 py-3 align-top">
-                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <div className="space-y-2">
                               <div>
                                 {uploaded ? (
                                   <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
@@ -240,40 +264,48 @@ export default function Declaration({ formData, updateFormData }: Props) {
                                 )}
                               </div>
 
-                              <div className="flex items-center justify-end gap-2">
-                              {/* Camera icon: open camera capture (mobile-supported browsers) */}
-                              <button
-                                type="button"
-                                title="Open camera"
-                                aria-label="Open camera to capture document"
-                                onClick={() => openCamera(doc.key)}
-                                className={`inline-flex items-center justify-center w-10 h-9 rounded-md cursor-pointer transition-colors ${
-                                  uploaded
-                                    ? 'bg-red-600 text-white hover:bg-red-700'
-                                    : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
-                                }`}
-                              >
-                                <Camera size={18} />
-                              </button>
+                              <div className="flex items-center justify-start gap-2 flex-wrap">
+                                {/* Camera icon: open camera capture */}
+                                <button
+                                  type="button"
+                                  title={uploaded ? "Recapture document" : "Capture document"}
+                                  aria-label={uploaded ? "Recapture document with camera" : "Capture document with camera"}
+                                  onClick={() => openCamera(doc.key)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                                >
+                                  <Camera size={16} />
+                                  {uploaded ? 'Recapture' : 'Capture'}
+                                </button>
 
-                              {/* Folder icon: open file picker (PDF/images) */}
-                              <label
-                                title="Choose from device"
-                                aria-label="Choose document from device"
-                                className={`inline-flex items-center justify-center w-10 h-9 rounded-md cursor-pointer transition-colors ${
-                                  uploaded
-                                    ? 'bg-red-600 text-white hover:bg-red-700'
-                                    : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
-                                }`}
-                              >
-                                <FolderOpen size={18} />
-                                <input
-                                  type="file"
-                                  accept=".pdf,image/*"
-                                  className="hidden"
-                                  onChange={(e) => handleFileSelect(doc.key, e.target.files)}
-                                />
-                              </label>
+                                {/* Folder icon: open file picker */}
+                                <label
+                                  title={uploaded ? "Reupload from device" : "Upload from device"}
+                                  aria-label={uploaded ? "Reupload document from device" : "Upload document from device"}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                                >
+                                  <FolderOpen size={16} />
+                                  {uploaded ? 'Reupload' : 'Upload'}
+                                  <input
+                                    type="file"
+                                    accept=".pdf,image/*"
+                                    className="hidden"
+                                    onChange={(e) => handleFileSelect(doc.key, e.target.files)}
+                                  />
+                                </label>
+
+                                {/* Delete button - only show if uploaded */}
+                                {uploaded && (
+                                  <button
+                                    type="button"
+                                    title="Remove document"
+                                    aria-label="Remove uploaded document"
+                                    onClick={() => updateFormData({ [doc.key]: '' } as Partial<FormData>)}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
+                                  >
+                                    <Trash2 size={16} />
+                                    Remove
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </td>
@@ -303,56 +335,56 @@ export default function Declaration({ formData, updateFormData }: Props) {
                 I/We declare that the information provided in this application is true and accurate to the best of my/our knowledge. I/We understand and agree to be bound by the terms and conditions governing the use of Seylan Bank Credit Cards as published on the bank's website and as may be amended from time to time.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">2. EFTC Declaration (Foreign Exchange Act No. 12 of 2017)</h4>
               <p>
                 I/We acknowledge that all international transactions made using this credit card will be subject to the provisions of the Foreign Exchange Act No. 12 of 2017 and regulations thereunder. I/We undertake to comply with all applicable foreign exchange regulations and restrictions imposed by the Central Bank of Sri Lanka.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">3. AML / KYC Compliance</h4>
               <p>
                 I/We confirm that I/we have provided all necessary documents for Anti-Money Laundering (AML) and Know Your Customer (KYC) verification purposes. I/We understand that the Bank reserves the right to request additional information and documentation at any time. I/We authorize the Bank to conduct necessary background checks and verification procedures.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">4. Internet & SMS Banking Terms</h4>
               <p>
                 I/We agree to the terms and conditions governing internet and SMS banking services provided by Seylan Bank. I/We acknowledge that these services may be subject to additional charges as per the bank's tariff structure. I/We understand that it is my/our responsibility to maintain the confidentiality of all login credentials and security information.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">5. Liability & Indemnity</h4>
               <p>
                 I/We agree to indemnify and hold harmless Seylan Bank, its officers, employees, and agents from any claims, losses, damages, liabilities, or expenses arising from the use of the credit card. I/We understand that I/we am/are solely responsible for all transactions made using the card, including those made by any supplementary cardholder or authorized person. I/We agree to promptly notify the Bank of any loss, theft, or unauthorized use of the card.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">6. Data Protection & Privacy</h4>
               <p>
                 I/We consent to Seylan Bank collecting, processing, storing, and using my/our personal data in accordance with applicable data protection laws and the Bank's privacy policy. I/We understand that this information may be shared with credit bureaus, regulatory authorities, and other entities as required by law or for the purpose of processing this credit card application. I/We have the right to access, correct, or request deletion of my/our personal data as per applicable regulations.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">7. Credit Assessment & Approval</h4>
               <p>
                 I/We understand that this application does not guarantee approval. The Bank reserves the right to accept or reject this application at its sole discretion. The credit limit granted, if approved, will be determined by the Bank based on its credit assessment policies. The Bank may also request additional documents or information before processing this application.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">8. Fees & Charges</h4>
               <p>
                 I/We acknowledge that I/we have been informed of the annual fees, interest rates, late payment charges, and other applicable fees associated with this credit card. I/We agree to pay all such fees and charges as per the bank's tariff structure and terms and conditions.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">9. Authorized Officer Verification</h4>
               <p>
