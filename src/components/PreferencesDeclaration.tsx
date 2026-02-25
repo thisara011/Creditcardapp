@@ -1,5 +1,4 @@
-import React from 'react';
-import { FileText, DollarSign, Settings, UserCheck, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, DollarSign, FileText, Settings, UserCheck } from 'lucide-react';
 import { FormData } from '../App';
 import SignaturePad from './SignaturePad';
 
@@ -28,7 +27,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
             <DollarSign size={20} />
             Auto-Settlement Preferences
           </h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -74,7 +73,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Branch <span className="text-red-500">*</span>
@@ -87,7 +86,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Payment Option <span className="text-red-500">*</span>
@@ -113,7 +112,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
             <Settings size={20} />
             Value-Added Services (VAS)
           </h3>
-          
+
           <div className="space-y-4">
             <div className="bg-white p-4 rounded-lg border border-blue-200">
               <p className="text-sm text-gray-700 mb-2">
@@ -176,7 +175,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                   />
                   <p className="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, PNG</p>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Paper Statement Address (If PDF e-Statement not required)
@@ -203,7 +202,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
             <UserCheck size={20} />
             Personal Assistant / Secretary Authorization
           </h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -249,7 +248,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     NIC <span className="text-red-500">*</span>
@@ -262,7 +261,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Address <span className="text-red-500">*</span>
@@ -275,7 +274,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Contact Number <span className="text-red-500">*</span>
@@ -288,7 +287,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email <span className="text-red-500">*</span>
@@ -301,7 +300,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                   />
                 </div>
-                
+
                 <div className="bg-white p-4 rounded-lg border border-purple-200">
                   <label className="flex items-start cursor-pointer">
                     <input
@@ -311,7 +310,16 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                       className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E] mt-1"
                     />
                     <span className="ml-3 text-sm text-gray-700">
-                      <strong>Authorization Declaration:</strong> I hereby authorize the above-mentioned Personal Assistant/Secretary to access my credit card information and perform transactions on my behalf.
+                      <strong>Authorization Declaration:</strong>
+                      <span className="block mt-2">
+                        I/ We hereby authorise the above named Mr./ Mrs./ Dr. <span className="font-semibold">{formData.paName || '................................'}</span> to deal and/ or communicate with Seylan Bank PLC in respect of the aforementioned Credit Card and/ or any and all transactions related to the said Credit Card for and on my/ our behalf.
+                      </span>
+                      <span className="block mt-2">
+                        I/ We further consent and authorise Seylan Bank PLC to deliver the aforesaid Credit Card and to provide any and all information in respect to the transaction carried out by me and to obtain information as and when required for the purpose of the transactions of the said Credit Card for and on my/ our behalf.
+                      </span>
+                      <span className="block mt-2">
+                        I/ We accept and acknowledge when acting as aforesaid Seylan Bank PLC shall at all times comply the statutory provisions laid under Section 77 of the Banking (amendment) Act and I/ we hereby renounce any and all rights, powers and authorities which I/ we may acquire against Seylan Bank PLC, for acting upon my/ our instructions and on my/ our behalf and at all times hereafter to save, defend and keep indemnified the said Seylan Bank PLC against all claims, demands and action suites and other proceedings, losses, charges, costs and expenses whatsoever which may arise and undertake to reimburse and/ or pay on demand all charges, losses, damages and expenses which the said Seylan Bank PLC shall incur or to be put into in respect of any claims, demands or actions which may arise on acting as aforesaid.
+                      </span>
                     </span>
                   </label>
                 </div>
@@ -326,7 +334,7 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
             <CheckCircle2 size={20} />
             Signatures & Legal Declaration
           </h3>
-          
+
           <div className="space-y-6">
             {/* Declaration Text */}
             <div className="bg-white p-4 rounded-lg border border-red-200 max-h-64 overflow-y-auto">

@@ -1,19 +1,19 @@
+import seylanLogo from 'figma:asset/132041194bd3ff5904e596a3b127b141748144f5.png';
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
-import ProductSelection from './components/ProductSelection';
-import PersonalDetails from './components/PersonalDetails';
 import ContactResidence from './components/ContactResidence';
+import Declaration from './components/Declaration';
 import EmploymentFinancials from './components/EmploymentFinancials';
 import JointApplicantsReferees from './components/JointApplicantsReferees';
+import PersonalDetails from './components/PersonalDetails';
 import Preferences from './components/Preferences';
-import Declaration from './components/Declaration';
-import seylanLogo from 'figma:asset/132041194bd3ff5904e596a3b127b141748144f5.png';
+import ProductSelection from './components/ProductSelection';
 
 export interface FormData {
   // Step 1: Product Selection
   cardType: string;
   requestedCreditLimit: number;
-  
+
   // Step 2: Personal Identification
   identityType: 'NIC' | 'Passport' | '';
   nicNumber: string;
@@ -29,7 +29,7 @@ export interface FormData {
   dateOfBirth: string;
   mobileNumber: string;
   emailAddress: string;
-  
+
   // Step 2: Addresses (collected once)
   homeAddressLine: string;
   homeDistrict: string;
@@ -40,13 +40,15 @@ export interface FormData {
   workDistrict: string;
   cardDeliveryLocation: string;
   cardDeliveryBranch: string;
-  
+
   // Step 3: Employment & Income
   employmentSector: string;
   natureOfBusiness: string;
   natureOfBusinessOther: string;
   fieldOfEmployment: string;
+  educationLevel: string;
   designation: string;
+  designationOther: string;
   lengthOfEmployment: number;
   employerName: string;
   employerAddress: string;
@@ -55,15 +57,19 @@ export interface FormData {
   prevEmployerAddress: string;
   prevLengthOfService: number;
   prevDesignation: string;
+  prevDesignationOther: string;
   netMonthlyIncome: number;
   otherIncome: number;
   otherIncomeSource: string;
-  
+  residenceType: string;
+  numberOfDependents: number;
+
   // Step 3: PEP/EDD
   isPEP: string;
+  isPEPRelated: string;
   pepNatureOfRelationship: string;
   pepFormUpload: string;
-  
+
   // Step 4: Supplementary Card
   requireSupplementaryCard: string;
   suppTitle: string;
@@ -83,7 +89,7 @@ export interface FormData {
   suppTelephone: string;
   suppRequestedCreditLimit: number;
   suppSignature: string;
-  
+
   // Step 4: Referees (removed joint applicant, keeping 2 referees)
   referee1Name: string;
   referee1NIC: string;
@@ -97,19 +103,19 @@ export interface FormData {
   referee2Relationship: string;
   referee2Address: string;
   referee2HomeTelephone: string;
-  
+
   // Step 5: Auto-Settlement
   autoSettlement: string;
   settlementAccountNumber: string;
   settlementBranch: string;
   settlementPaymentOption: string;
-  
+
   // Step 5: Value-Added Services
   valueAddedServices: string;
   vasWrittenRequestUpload: string;
   paperStatementAddress: string;
   selectedVAS: string[];
-  
+
   // Step 5: Personal Assistant Authorization
   requirePA: string;
   paName: string;
@@ -118,7 +124,7 @@ export interface FormData {
   paContactNumber: string;
   paEmail: string;
   paAuthorizationConsent: boolean;
-  
+
   // Step 6: Application Type & Support Documents
   applicationType: 'Individual' | 'Business' | '';
   // Individual applicant documents
@@ -140,6 +146,11 @@ export interface FormData {
   primarySignature: string;
   declarationConsent: boolean;
   signatureDate: string;
+  bankName: string;
+  suppSignature: string;
+  suppSignatureDate: string;
+  authorizedOfficerSignature: string;
+  authorizedOfficerDate: string;
 }
 
 export default function App() {
@@ -174,7 +185,9 @@ export default function App() {
     natureOfBusiness: '',
     natureOfBusinessOther: '',
     fieldOfEmployment: '',
+    educationLevel: '',
     designation: '',
+    designationOther: '',
     lengthOfEmployment: 0,
     employerName: '',
     employerAddress: '',
@@ -183,10 +196,14 @@ export default function App() {
     prevEmployerAddress: '',
     prevLengthOfService: 0,
     prevDesignation: '',
+    prevDesignationOther: '',
     netMonthlyIncome: 0,
     otherIncome: 0,
     otherIncomeSource: '',
+    residenceType: '',
+    numberOfDependents: 0,
     isPEP: '',
+    isPEPRelated: '',
     pepNatureOfRelationship: '',
     pepFormUpload: '',
     requireSupplementaryCard: '',
@@ -250,6 +267,11 @@ export default function App() {
     primarySignature: '',
     declarationConsent: false,
     signatureDate: new Date().toLocaleDateString('en-GB'),
+    bankName: '',
+    suppSignature: '',
+    suppSignatureDate: new Date().toLocaleDateString('en-GB'),
+    authorizedOfficerSignature: '',
+    authorizedOfficerDate: new Date().toLocaleDateString('en-GB'),
   });
 
   const totalSteps = 6;
@@ -303,9 +325,9 @@ export default function App() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <img 
-                src={seylanLogo} 
-                alt="Seylan Bank" 
+              <img
+                src={seylanLogo}
+                alt="Seylan Bank"
                 className="h-12 md:h-16 w-auto bg-white px-3 py-2 rounded"
               />
               <div>
@@ -330,13 +352,12 @@ export default function App() {
               <React.Fragment key={step}>
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                      step < currentStep
-                        ? 'bg-green-500 text-white'
-                        : step === currentStep
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${step < currentStep
+                      ? 'bg-green-500 text-white'
+                      : step === currentStep
                         ? 'bg-[#C8102E] text-white'
                         : 'bg-gray-200 text-gray-400'
-                    }`}
+                      }`}
                   >
                     {step < currentStep ? <Check size={20} /> : step}
                   </div>
@@ -351,9 +372,8 @@ export default function App() {
                 </div>
                 {step < 6 && (
                   <div
-                    className={`flex-1 h-1 mx-2 ${
-                      step < currentStep ? 'bg-green-500' : 'bg-gray-200'
-                    }`}
+                    className={`flex-1 h-1 mx-2 ${step < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                      }`}
                   />
                 )}
               </React.Fragment>

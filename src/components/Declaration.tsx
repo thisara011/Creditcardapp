@@ -329,69 +329,62 @@ export default function Declaration({ formData, updateFormData }: Props) {
             Terms, Conditions & Declarations
           </h3>
           <div className="text-sm text-gray-700 space-y-4">
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">1. Credit Card Terms & Conditions</h4>
-              <p>
-                I/We declare that the information provided in this application is true and accurate to the best of my/our knowledge. I/We understand and agree to be bound by the terms and conditions governing the use of Seylan Bank Credit Cards as published on the bank's website and as may be amended from time to time.
-              </p>
-            </div>
+            <p>
+              I / We state that the provided details are true and correct and are given in support of my/our application to Seylan Bank PLC, Sri Lanka for a Credit Card account, subject to the respective Credit Cardholder agreement which outlines the terms and conditions of use, and which will be sent to me/us with approval of my/our application.
+            </p>
+            <p>
+              I / We hereby accept and undertake to be bound by the existing Terms and Conditions applicable to Credit Card Operations of Seylan Bank PLC and any amendments thereto, which shall come into effect from time to time and shall be published in www.seylan.lk and /or be sent to me/us in the event the Bank issues me / us a Credit Card. I / We hereby acknowledge and agree that it is my / our duty to be aware of and educate myself / ourselves of such amendments in a timely and regular manner. I / We also agree that in the event of me / us refusing to agree to the said terms and conditions I / We will immediately return the said card to Seylan Bank PLC. Not returning the said Card by me / us would be my /our due acceptance of such amendments to Terms and Conditions applicable to Seylan Bank Credit Cards.
+            </p>
+            <p>
+              I/ We agree to accept liability of all transactions performed until reporting the loss of my / our cards.
+            </p>
+            <p>
+              I / We further agree to a new Card product as a companion or an increase of my credit limit by the Bank at its discretion, after evaluating my / our credit performance, with my / our consent, in future.
+            </p>
 
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">2. EFTC Declaration (Foreign Exchange Act No. 12 of 2017)</h4>
-              <p>
-                I/We acknowledge that all international transactions made using this credit card will be subject to the provisions of the Foreign Exchange Act No. 12 of 2017 and regulations thereunder. I/We undertake to comply with all applicable foreign exchange regulations and restrictions imposed by the Central Bank of Sri Lanka.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">3. AML / KYC Compliance</h4>
-              <p>
-                I/We confirm that I/we have provided all necessary documents for Anti-Money Laundering (AML) and Know Your Customer (KYC) verification purposes. I/We understand that the Bank reserves the right to request additional information and documentation at any time. I/We authorize the Bank to conduct necessary background checks and verification procedures.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">4. Internet & SMS Banking Terms</h4>
-              <p>
-                I/We agree to the terms and conditions governing internet and SMS banking services provided by Seylan Bank. I/We acknowledge that these services may be subject to additional charges as per the bank's tariff structure. I/We understand that it is my/our responsibility to maintain the confidentiality of all login credentials and security information.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">5. Liability & Indemnity</h4>
-              <p>
-                I/We agree to indemnify and hold harmless Seylan Bank, its officers, employees, and agents from any claims, losses, damages, liabilities, or expenses arising from the use of the credit card. I/We understand that I/we am/are solely responsible for all transactions made using the card, including those made by any supplementary cardholder or authorized person. I/We agree to promptly notify the Bank of any loss, theft, or unauthorized use of the card.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">6. Data Protection & Privacy</h4>
-              <p>
-                I/We consent to Seylan Bank collecting, processing, storing, and using my/our personal data in accordance with applicable data protection laws and the Bank's privacy policy. I/We understand that this information may be shared with credit bureaus, regulatory authorities, and other entities as required by law or for the purpose of processing this credit card application. I/We have the right to access, correct, or request deletion of my/our personal data as per applicable regulations.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">7. Credit Assessment & Approval</h4>
-              <p>
-                I/We understand that this application does not guarantee approval. The Bank reserves the right to accept or reject this application at its sole discretion. The credit limit granted, if approved, will be determined by the Bank based on its credit assessment policies. The Bank may also request additional documents or information before processing this application.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">8. Fees & Charges</h4>
-              <p>
-                I/We acknowledge that I/we have been informed of the annual fees, interest rates, late payment charges, and other applicable fees associated with this credit card. I/We agree to pay all such fees and charges as per the bank's tariff structure and terms and conditions.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">9. Authorized Officer Verification</h4>
-              <p>
-                I/We understand that this application will be reviewed and verified by an authorized bank officer. The Bank reserves the right to contact me/us for clarification or additional information if required.
-              </p>
-            </div>
+            <h4 className="font-semibold text-gray-900">Declaration by the Applicant(s) for Electronic Fund Transfer Cards (EFTC)</h4>
+            <p>
+              To: Director-Department of Foreign Exchange
+            </p>
+            <p>
+              (To be filled by the Applicant/s to obtain foreign exchange against Credit/Debit or any other Electronic Fund Transfer Card)
+            </p>
+            <p>
+              I / We <span className="font-semibold underline">{formData.fullName || '................................'}</span> (Primary Cardholder){formData.requireSupplementaryCard === 'Yes' ? `, ${formData.suppFullName || '................................'} (Supplementary Cardholder)` : ''} declare that all details given above by me/us on this form are true and correct.
+            </p>
+            <p>
+              I / We hereby confirm that I / We am/ are aware of the terms and conditions applicable for the use of Electronic Fund Transfer Cards (EFTCs) as detailed in the Directions No. 03 of 2021 dated 18 March 2021 (Annexed) issued under the provisions of the Foreign Exchange Act, No. 12 of 2017 (the FEA) subject to which the card may be used for transactions in foreign exchange and I / We hereby undertake to abide by the said conditions.
+            </p>
+            <p>
+              I / We further agree to provide any information on transactions carried out by me/ us in foreign exchange on the card issued to me/us as <span className="font-semibold underline">{formData.bankName || '................................'}</span> may require for the purpose of the FEA.
+            </p>
+            <p>
+              I / We am / are aware that the bank is required to suspend availability of foreign exchange on EFTC if reasonable grounds exist to suspect that foreign exchange transactions which are not permitted in terms of the annexed Directions issued under the provisions of the FEA are being carried out on the EFTC issued to me/us and to report the matter to the Director - Department of Foreign Exchange. I / We also affirm that I / We undertake to surrender the EFTCs to the bank, if I / We migrate or leave Sri Lanka for permanent residence or employment abroad, as applicable.
+            </p>
+            <p>
+              Further, I / we also agreed to notify my/our change in residential status to the bank, if any, accordingly.
+            </p>
+            <p>
+              I / We agree to comply with the terms & conditions applicable to the conduct of “internet / SMS Banking facilities” which I / We have read and understood (Please refer www.seylan.lk for rules and regulations)
+            </p>
+            <p>
+              I, as the Authorized Officer of the bank have carefully examined the information together with relevant documents given by the applicant/s and satisfied with the bona-fide of these information and documents. Further, I as the Authorized Officer of the bank undertake at all times, to exercise due diligence on the transactions carried out by the cardholder on his / her EFTC in foreign exchange and to suspend the availability of foreign exchange on the EFTC if reasonable grounds exist to suspect that foreign exchange transactions which are not permitted in terms of Directions No. 03 of 2021 dated 18 March 2021 issued under the provisions of the Foreign Exchange Act, No. 12 of 2017 are being carried out on the EFTC, in violation of the undertaking given by the card holders and to bring the matter to the attention of the Director - Department of Foreign Exchange.
+            </p>
           </div>
+        </div>
+
+        {/* Bank Name Field for EFTC */}
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Bank Name (for EFTC purposes)
+          </label>
+          <input
+            type="text"
+            value={formData.bankName}
+            onChange={(e) => updateFormData({ bankName: e.target.value })}
+            placeholder="Enter the bank name"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+          />
         </div>
 
         {/* Consent Checkbox */}
@@ -409,16 +402,70 @@ export default function Declaration({ formData, updateFormData }: Props) {
           </label>
         </div>
 
-        {/* Primary Cardholder Signature */}
+        {/* Signatures Section */}
         <div className="bg-white p-6 rounded-lg border-2 border-gray-300">
-          <h4 className="font-semibold text-gray-900 mb-4">Primary Cardholder Signature</h4>
-          <SignaturePad
-            signature={formData.primarySignature}
-            onSignatureChange={(sig) => updateFormData({ primarySignature: sig })}
-          />
-          <p className="text-xs text-gray-500 mt-3">
-            <strong>Note:</strong> This signature will be used for all required signature fields in the application and will be auto-populated where necessary. By signing, you confirm that you have the authority to enter into this agreement.
-          </p>
+          <h4 className="font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <FileText size={20} className="text-[#C8102E]" />
+            Signatures & Dates
+          </h4>
+
+          <div className="space-y-6">
+            {/* Primary Cardholder Signature */}
+            <div className="border-t pt-6">
+              <h5 className="font-semibold text-gray-900 mb-4">Signature of the Primary Cardholder</h5>
+              <SignaturePad
+                signature={formData.primarySignature}
+                onSignatureChange={(sig) => updateFormData({ primarySignature: sig })}
+              />
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                <input
+                  type="date"
+                  value={formData.signatureDate}
+                  onChange={(e) => updateFormData({ signatureDate: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            {/* Supplementary Cardholder Signature (if applicable) */}
+            {formData.requireSupplementaryCard === 'Yes' && (
+              <div className="border-t pt-6">
+                <h5 className="font-semibold text-gray-900 mb-4">Signature of the Supplementary Cardholder</h5>
+                <SignaturePad
+                  signature={formData.suppSignature}
+                  onSignatureChange={(sig) => updateFormData({ suppSignature: sig })}
+                />
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                  <input
+                    type="date"
+                    value={formData.suppSignatureDate}
+                    onChange={(e) => updateFormData({ suppSignatureDate: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Authorized Officer Signature */}
+            <div className="border-t pt-6 bg-gray-50 p-4 rounded">
+              <h5 className="font-semibold text-gray-900 mb-4">Signature of the Authorised Officer</h5>
+              <SignaturePad
+                signature={formData.authorizedOfficerSignature}
+                onSignatureChange={(sig) => updateFormData({ authorizedOfficerSignature: sig })}
+              />
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                <input
+                  type="date"
+                  value={formData.authorizedOfficerDate}
+                  onChange={(e) => updateFormData({ authorizedOfficerDate: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Date */}
@@ -471,42 +518,6 @@ export default function Declaration({ formData, updateFormData }: Props) {
           </div>
         </div>
 
-        {/* Bank Officer Section (Read-only placeholder) */}
-        <div className="bg-gray-100 p-6 rounded-lg border-2 border-gray-400">
-          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <FileText size={20} />
-            For Bank Use Only
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">
-                Authorized Bank Officer Signature
-              </label>
-              <div className="w-full h-24 border-2 border-dashed border-gray-400 rounded-lg bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500 text-sm">To be signed by bank officer</span>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">
-                Officer Details
-              </label>
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  placeholder="Officer Name"
-                  disabled
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-200"
-                />
-                <input
-                  type="text"
-                  placeholder="Officer ID"
-                  disabled
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-200"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

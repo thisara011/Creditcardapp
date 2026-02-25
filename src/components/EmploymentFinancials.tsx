@@ -1,5 +1,4 @@
-import React from 'react';
-import { Briefcase, DollarSign, AlertCircle, Upload, MapPin } from 'lucide-react';
+import { AlertCircle, Briefcase, DollarSign, MapPin, Upload } from 'lucide-react';
 import { FormData } from '../App';
 import SearchableBranchSelect from './SearchableBranchSelect';
 
@@ -9,20 +8,42 @@ interface Props {
 }
 
 const naturesOfBusiness = [
-  'Advertising', 'Government', 'Plantation', 'Airline / Travel', 'Healthcare', 
-  'Professional Services', 'Armed Services', 'Hotel & Hospitality', 'Banking / Finance', 
-  'Information Technology (IT)', 'Trading', 'Construction', 'Insurance', 'Telecommunication', 
+  'Advertising', 'Government', 'Plantation', 'Airline / Travel', 'Healthcare',
+  'Professional Services', 'Armed Services', 'Hotel & Hospitality', 'Banking / Finance',
+  'Information Technology (IT)', 'Trading', 'Construction', 'Insurance', 'Telecommunication',
   'Freight Forwarding / Shipping', 'Manufacturing', 'Apparel', 'NGO / NPO / Charity', 'Other'
 ];
 
 const fieldsOfEmployment = [
   'ADMIN. & MANAG', 'CLERK', 'CLERICAL', 'DEPENDANT', 'DIRECTOR', 'ENGINEER', 'FLORA / FAUNA',
-  'REGISTER JUDGE', 'PROD TRAN LABOR', 'MANAGER', 'MILITARY', 'POLICEMAN', 'PROPRIETOR', 
-  'RETIRED', 'SALES', 'SECRETARY', 'STAFF', 'STUDENT', 'SERVICE', 'PROF. TECH', 'TEACHER', 
-  'UNEMPLOYED', 'HOUSEWIFE', 'RFD SP', 'PILOTS', 'BANKERS', 'DOCTOR', 'ACCOUNTANTS', 
-  'LAWYERS', 'CONSULTANTS', 'BUSINESS ANALYST', 'ARCHITECT', 'IT PROFESSIONAL', 
-  'AGM / DGM', 'CEO / GM / MD', 'PROFESSIONAL', 'NURSE', 'SUPERVISOR / EXECUTIVE', 
+  'REGISTER JUDGE', 'PROD TRAN LABOR', 'MANAGER', 'MILITARY', 'POLICEMAN', 'PROPRIETOR',
+  'RETIRED', 'SALES', 'SECRETARY', 'STAFF', 'STUDENT', 'SERVICE', 'PROF. TECH', 'TEACHER',
+  'UNEMPLOYED', 'HOUSEWIFE', 'RFD SP', 'PILOTS', 'BANKERS', 'DOCTOR', 'ACCOUNTANTS',
+  'LAWYERS', 'CONSULTANTS', 'BUSINESS ANALYST', 'ARCHITECT', 'IT PROFESSIONAL',
+  'AGM / DGM', 'CEO / GM / MD', 'PROFESSIONAL', 'NURSE', 'SUPERVISOR / EXECUTIVE',
   'CHEF / COOK', 'MERCHANDISER', 'MEDIA / JOURNALIST'
+];
+
+const educationLevels = [
+  'Professional Qualification (MBBS, LLB/Attorney at Law, BSc Eng, ACA, CFA etc.)/ Post Graduate (MBA, etc )',
+  'Graduates',
+  'Vocational Training / Diploma Holders',
+  'Advanced Level',
+  'Up to Ordinary Level'
+];
+
+const positions = [
+  'Corporate Management',
+  'Senior Management',
+  'Executive/ Middle Management/ Employed Professionals',
+  'Others'
+];
+
+const residenceTypes = [
+  'Own (Not Mortgaged)',
+  'Own (Mortgaged)',
+  'Parents / Spouse\'s House',
+  'Leased/ Rented'
 ];
 
 export default function EmploymentFinancials({ formData, updateFormData }: Props) {
@@ -153,27 +174,61 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
           />
         </div>
 
-        {/* Designation */}
+        {/* Education Level */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Designation <span className="text-red-500">*</span>
+            Education Level <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
+          <select
+            value={formData.educationLevel}
+            onChange={(e) => updateFormData({ educationLevel: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+          >
+            {educationLevels.map((level) => (
+              <option key={level} value={level}>{level}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Position */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Position <span className="text-red-500">*</span>
+          </label>
+          <select
             value={formData.designation}
             onChange={(e) => updateFormData({ designation: e.target.value })}
-            placeholder="Your job title/designation"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-          />
+          >
+            {positions.map((position) => (
+              <option key={position} value={position}>{position}</option>
+            ))}
+          </select>
         </div>
+
+        {/* Other Position */}
+        {formData.designation === 'Others' && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Specify Position <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.designationOther}
+              onChange={(e) => updateFormData({ designationOther: e.target.value })}
+              placeholder="Please specify your position"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+            />
+          </div>
+        )}
 
         {/* Length of Current Employment */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Length of Current Employment (Years and Months) <span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
+          <div className="flex gap-4 items-end">
+            <div className="flex-1">
               <label className="block text-xs font-medium text-gray-600 mb-1">Years</label>
               <input
                 type="number"
@@ -183,7 +238,7 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
               />
             </div>
-            <div>
+            <div className="flex-1">
               <label className="block text-xs font-medium text-gray-600 mb-1">Months</label>
               <input
                 type="number"
@@ -212,11 +267,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                 </p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Previous Employer Name <span className="text-red-500">*</span>
+                  Previous Employer Name
                 </label>
                 <input
                   type="text"
@@ -226,10 +281,10 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Previous Employer Address <span className="text-red-500">*</span>
+                  Previous Employer Address
                 </label>
                 <textarea
                   value={formData.prevEmployerAddress}
@@ -239,13 +294,13 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Length of Service (Years and Months) <span className="text-red-500">*</span>
+                  Length of Service (Years and Months)
                 </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
+                <div className="flex gap-4 items-end">
+                  <div className="flex-1">
                     <label className="block text-xs font-medium text-gray-600 mb-1">Years</label>
                     <input
                       type="number"
@@ -255,7 +310,7 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                     />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <label className="block text-xs font-medium text-gray-600 mb-1">Months</label>
                     <input
                       type="number"
@@ -268,19 +323,36 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Previous Designation <span className="text-red-500">*</span>
+                  Previous Position
                 </label>
-                <input
-                  type="text"
+                <select
                   value={formData.prevDesignation}
                   onChange={(e) => updateFormData({ prevDesignation: e.target.value })}
-                  placeholder="Previous job title/designation"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-                />
+                >
+                  {positions.map((position) => (
+                    <option key={position} value={position}>{position}</option>
+                  ))}
+                </select>
               </div>
+
+              {formData.prevDesignation === 'Others' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Specify Previous Position
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.prevDesignationOther}
+                    onChange={(e) => updateFormData({ prevDesignationOther: e.target.value })}
+                    placeholder="Please specify your previous position"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -327,6 +399,37 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
             value={formData.otherIncomeSource}
             onChange={(e) => updateFormData({ otherIncomeSource: e.target.value })}
             placeholder="e.g., Rental income, Investments, Business"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+          />
+        </div>
+
+        {/* Type of Residence */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Type of Residence (billing proof required) <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={formData.residenceType}
+            onChange={(e) => updateFormData({ residenceType: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+          >
+            {residenceTypes.map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Number of Dependents */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Number of Dependents <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            value={formData.numberOfDependents}
+            onChange={(e) => updateFormData({ numberOfDependents: Number(e.target.value) })}
+            min="0"
+            placeholder="Enter number of dependents"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
           />
         </div>
@@ -417,7 +520,7 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                     name="isPEP"
                     value="Yes"
                     checked={formData.isPEP === 'Yes'}
-                    onChange={(e) => updateFormData({ isPEP: e.target.value })}
+                    onChange={(e) => updateFormData({ isPEP: e.target.value, isPEPRelated: '' })}
                     className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
                   />
                   <span className="ml-2 text-gray-700">Yes</span>
@@ -436,7 +539,39 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
               </div>
             </div>
 
-            {formData.isPEP === 'Yes' && (
+            {formData.isPEP === 'No' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Related in any way to any of the persons referred to above? <span className="text-red-500">*</span>
+                </label>
+                <div className="flex gap-6">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="isPEPRelated"
+                      value="Yes"
+                      checked={formData.isPEPRelated === 'Yes'}
+                      onChange={(e) => updateFormData({ isPEPRelated: e.target.value })}
+                      className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                    />
+                    <span className="ml-2 text-gray-700">Yes</span>
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="isPEPRelated"
+                      value="No"
+                      checked={formData.isPEPRelated === 'No'}
+                      onChange={(e) => updateFormData({ isPEPRelated: e.target.value })}
+                      className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                    />
+                    <span className="ml-2 text-gray-700">No</span>
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {(formData.isPEP === 'Yes' || formData.isPEPRelated === 'Yes') && (
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">

@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormData } from '../App';
 
 interface Props {
@@ -23,8 +22,8 @@ export default function ProductSelection({ formData, updateFormData }: Props) {
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
         >
           <option value="">Select Card Type</option>
-          <option value="Visa Signature">Visa Signature</option>
-          <option value="World MasterCard">World MasterCard</option>
+          <option value="Visa Card">Visa Card</option>
+          <option value="Master Card">Master Card</option>
         </select>
       </div>
 
