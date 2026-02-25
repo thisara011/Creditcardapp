@@ -28,6 +28,7 @@ export interface FormData {
   mothersMaidenName: string;
   dateOfBirth: string;
   mobileNumber: string;
+  homeTelephone: string;
   emailAddress: string;
 
   // Step 2: Addresses (collected once)
@@ -171,6 +172,7 @@ export default function App() {
     mothersMaidenName: '',
     dateOfBirth: '',
     mobileNumber: '',
+    homeTelephone: '',
     emailAddress: '',
     homeAddressLine: '',
     homeDistrict: '',

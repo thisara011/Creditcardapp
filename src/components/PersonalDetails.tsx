@@ -1,4 +1,3 @@
-import React from 'react';
 import { User } from 'lucide-react';
 import { FormData } from '../App';
 
@@ -122,6 +121,21 @@ export default function PersonalDetails({ formData, updateFormData }: Props) {
             value={formData.mobileNumber}
             onChange={(e) => updateFormData({ mobileNumber: e.target.value })}
             placeholder="07XXXXXXXX"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+          />
+          <p className="text-xs text-gray-500 mt-1">This will be your registered mobile number</p>
+        </div>
+
+        {/* Home Telephone */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Home Telephone <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="tel"
+            value={formData.homeTelephone}
+            onChange={(e) => updateFormData({ homeTelephone: e.target.value })}
+            placeholder="011XXXXXXX"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
           />
         </div>
