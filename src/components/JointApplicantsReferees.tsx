@@ -1,5 +1,4 @@
-import React from 'react';
-import { Users, UserPlus, FileText } from 'lucide-react';
+import { UserPlus, Users } from 'lucide-react';
 import { FormData } from '../App';
 import SignaturePad from './SignaturePad';
 
@@ -43,7 +42,7 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
             <UserPlus size={20} />
             Supplementary Card Request
           </h3>
-          
+
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Do you require a Supplementary Card? <span className="text-red-500">*</span>
@@ -289,15 +288,15 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                 />
               </div>
 
-              {/* Home Address */}
+              {/* Permanent Address */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Home Address <span className="text-red-500">*</span>
+                  Permanent Address <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={formData.suppHomeAddress}
                   onChange={(e) => updateFormData({ suppHomeAddress: e.target.value })}
-                  placeholder="Complete home address"
+                  placeholder="Complete permanent address"
                   rows={2}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                 />
@@ -356,7 +355,7 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
             <Users size={20} />
             Details of a Relative Not Living With You
           </h3>
-          
+
           {/* Relative 1 */}
           <div className="mb-6">
             <h4 className="font-medium text-gray-800 mb-3">Relative 1</h4>
