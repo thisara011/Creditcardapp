@@ -602,7 +602,7 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                     />
                     <Upload className="text-[#C8102E]" size={20} />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, PNG</p>
+                  <p className="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, PNG (file capacity less than 5 MB)</p>
                 </div>
               </>
             )}
