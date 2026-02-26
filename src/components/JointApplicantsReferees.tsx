@@ -1,6 +1,5 @@
 import { UserPlus, Users } from 'lucide-react';
 import { FormData } from '../App';
-import SignaturePad from './SignaturePad';
 
 interface Props {
   formData: FormData;
@@ -279,13 +278,17 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Relationship to Primary Applicant <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   value={formData.suppRelationship}
                   onChange={(e) => updateFormData({ suppRelationship: e.target.value })}
-                  placeholder="e.g., Spouse, Child, Parent"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-                />
+                >
+                  <option value="">Select Relationship</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Parents">Parents</option>
+                  <option value="Siblings">Siblings</option>
+                  <option value="Married or Unmarried Child">Married or Unmarried Child</option>
+                </select>
               </div>
 
               {/* Permanent Address */}
@@ -333,17 +336,6 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                 <p className="text-xs text-gray-500 mt-1">
                   Maximum: LKR {formData.requestedCreditLimit.toLocaleString()} (Primary limit)
                 </p>
-              </div>
-
-              {/* Supplementary Signature */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Supplementary Cardholder Signature <span className="text-red-500">*</span>
-                </label>
-                <SignaturePad
-                  signature={formData.suppSignature}
-                  onSignatureChange={(sig) => updateFormData({ suppSignature: sig })}
-                />
               </div>
             </div>
           )}
