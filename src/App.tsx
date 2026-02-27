@@ -124,6 +124,7 @@ export interface FormData {
 
   // Step 5: Personal Assistant Authorization
   requirePA: string;
+  paTitle: string;
   paName: string;
   paNIC: string;
   paAddress: string;
@@ -258,6 +259,7 @@ export default function App() {
     paperStatementAddress: '',
     selectedVAS: [],
     requirePA: '',
+    paTitle: '',
     paName: '',
     paNIC: '',
     paAddress: '',

@@ -149,7 +149,6 @@ export default function Preferences({ formData, updateFormData }: Props) {
                 />
                 <span className="text-sm text-gray-700">
                   I do NOT wish to subscribe for any of the above Value Added Services
-                  <span className="text-red-500"> *</span>
                 </span>
               </label>
             </div>
@@ -217,6 +216,24 @@ export default function Preferences({ formData, updateFormData }: Props) {
 
             {showPAFields && (
               <div className="space-y-4 mt-4 pt-4 border-t border-purple-200">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Title <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={formData.paTitle}
+                    onChange={(e) => updateFormData({ paTitle: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                  >
+                    <option value="">Select Title</option>
+                    <option value="Mr">Mr</option>
+                    <option value="Mrs">Mrs</option>
+                    <option value="Ms">Ms</option>
+                    <option value="Dr">Dr</option>
+                    <option value="Rev">Rev</option>
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Name <span className="text-red-500">*</span>
@@ -293,7 +310,7 @@ export default function Preferences({ formData, updateFormData }: Props) {
                     <span className="ml-3 text-sm text-gray-700">
                       <strong>Authorization Declaration:</strong>
                       <span className="block mt-2">
-                        I/ We hereby authorise the above named Mr./ Mrs./ Dr. <span className="font-semibold">{formData.paName || '................................'}</span> to deal and/ or communicate with Seylan Bank PLC in respect of the aforementioned Credit Card and/ or any and all transactions related to the said Credit Card for and on my/ our behalf.
+                        I/ We hereby authorise the above named {formData.paTitle || 'Mr./ Mrs./ Dr.'} <span className="font-semibold">{formData.paName || '................................'}</span> to deal and/ or communicate with Seylan Bank PLC in respect of the aforementioned Credit Card and/ or any and all transactions related to the said Credit Card for and on my/ our behalf.
                       </span>
                       <span className="block mt-2">
                         I/ We further consent and authorise Seylan Bank PLC to deliver the aforesaid Credit Card and to provide any and all information in respect to the transaction carried out by me and to obtain information as and when required for the purpose of the transactions of the said Credit Card for and on my/ our behalf.
