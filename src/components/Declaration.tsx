@@ -1,4 +1,4 @@
-import { Camera, CheckCircle, CheckCircle2, FileText, FolderOpen, SwitchCamera, Trash2, XCircle } from 'lucide-react';
+import { Camera, CheckCircle, FileText, FolderOpen, SwitchCamera, Trash2, XCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { FormData } from '../App';
 import SignaturePad from './SignaturePad';
@@ -12,26 +12,34 @@ export default function Declaration({ formData, updateFormData }: Props) {
   const individualDocs: { key: keyof FormData; label: string }[] = [
     { key: 'indNicCopy', label: 'Customer National Identity Card (NIC)' },
     { key: 'indSalarySlips', label: 'Salary slips' },
-    { key: 'indConditionChecklist', label: 'Condition check list' },
     { key: 'indGuarantorNic', label: 'NIC of a Non-Related (NR) person (Guarantor/Reference)' },
     { key: 'indAddressProof', label: 'Address proof (if current address differs from NIC)' },
-    { key: 'indCribReports', label: 'CRIB reports' },
   ];
 
   const businessDocs: { key: keyof FormData; label: string; helper?: string }[] = [
     { key: 'bizNicCopy', label: 'Customer National Identity Card (NIC)' },
     { key: 'bizBusinessReg', label: 'Business Registration' },
-    { key: 'bizBusinessCrib', label: 'Business CRIB document' },
     {
       key: 'bizBankStatements',
       label: 'Bank Statements',
       helper: 'Take last 6 months from other banks for new customers (not required for existing customers).',
     },
     { key: 'bizCardApplicationReview', label: 'Card Application Review Form' },
-    { key: 'bizCribReports', label: 'CRIB reports (Individual / Directors)' },
   ];
 
-  const activeDocs = formData.applicationType === 'Business' ? businessDocs : individualDocs;
+  // Add conditional doc for supplementary card passport bio page
+  const getActiveDocs = () => {
+    const docs = formData.applicationType === 'Business' ? businessDocs : individualDocs;
+
+    // Add Supplementary Card Passport Bio Page if applicable
+    if (formData.requireSupplementaryCard === 'Yes' && formData.suppIdentityType === 'Passport') {
+      return [...docs, { key: 'suppPassportBioPage', label: 'Supplementary Cardholder Passport Bio Page' }];
+    }
+
+    return docs;
+  };
+
+  const activeDocs = getActiveDocs();
 
   // Shared file handler
   const handleFile = (key: keyof FormData, file: File) => {
@@ -356,7 +364,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
               I / We hereby confirm that I / We am/ are aware of the terms and conditions applicable for the use of Electronic Fund Transfer Cards (EFTCs) as detailed in the Directions No. 03 of 2021 dated 18 March 2021 (Annexed) issued under the provisions of the Foreign Exchange Act, No. 12 of 2017 (the FEA) subject to which the card may be used for transactions in foreign exchange and I / We hereby undertake to abide by the said conditions.
             </p>
             <p>
-              I / We further agree to provide any information on transactions carried out by me/ us in foreign exchange on the card issued to me/us as <span className="font-semibold underline">{formData.bankName || '................................'}</span> may require for the purpose of the FEA.
+              I / We further agree to provide any information on transactions carried out by me/ us in foreign exchange on the card issued to me/us as <span className="font-semibold">Seylan Bank</span> may require for the purpose of the FEA.
             </p>
             <p>
               I / We am / are aware that the bank is required to suspend availability of foreign exchange on EFTC if reasonable grounds exist to suspect that foreign exchange transactions which are not permitted in terms of the annexed Directions issued under the provisions of the FEA are being carried out on the EFTC issued to me/us and to report the matter to the Director - Department of Foreign Exchange. I / We also affirm that I / We undertake to surrender the EFTCs to the bank, if I / We migrate or leave Sri Lanka for permanent residence or employment abroad, as applicable.
@@ -367,39 +375,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
             <p>
               I / We agree to comply with the terms & conditions applicable to the conduct of “internet / SMS Banking facilities” which I / We have read and understood (Please refer www.seylan.lk for rules and regulations)
             </p>
-            <p>
-              I, as the Authorized Officer of the bank have carefully examined the information together with relevant documents given by the applicant/s and satisfied with the bona-fide of these information and documents. Further, I as the Authorized Officer of the bank undertake at all times, to exercise due diligence on the transactions carried out by the cardholder on his / her EFTC in foreign exchange and to suspend the availability of foreign exchange on the EFTC if reasonable grounds exist to suspect that foreign exchange transactions which are not permitted in terms of Directions No. 03 of 2021 dated 18 March 2021 issued under the provisions of the Foreign Exchange Act, No. 12 of 2017 are being carried out on the EFTC, in violation of the undertaking given by the card holders and to bring the matter to the attention of the Director - Department of Foreign Exchange.
-            </p>
           </div>
-        </div>
-
-        {/* Bank Name Field for EFTC */}
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Bank Name (for EFTC purposes)
-          </label>
-          <input
-            type="text"
-            value={formData.bankName}
-            onChange={(e) => updateFormData({ bankName: e.target.value })}
-            placeholder="Enter the bank name"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-          />
-        </div>
-
-        {/* Consent Checkbox */}
-        <div className="bg-red-50 p-6 rounded-lg border-2 border-red-300">
-          <label className="flex items-start cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.declarationConsent}
-              onChange={(e) => updateFormData({ declarationConsent: e.target.checked })}
-              className="w-5 h-5 text-[#C8102E] focus:ring-[#C8102E] mt-1 flex-shrink-0"
-            />
-            <span className="ml-4 text-sm text-gray-900">
-              <strong className="text-[#C8102E] text-base">I HAVE READ AND UNDERSTOOD</strong> all the terms, conditions, and declarations mentioned above. I agree to be bound by them and confirm that all information provided in this application is true and accurate. <span className="text-red-500 text-base">*</span>
-            </span>
-          </label>
         </div>
 
         {/* Signatures Section */}
@@ -451,6 +427,9 @@ export default function Declaration({ formData, updateFormData }: Props) {
             {/* Authorized Officer Signature */}
             <div className="border-t pt-6 bg-gray-50 p-4 rounded">
               <h5 className="font-semibold text-gray-900 mb-4">Signature of the Authorised Officer</h5>
+              <p className="text-sm text-gray-700 mb-4">
+                I, as the Authorized Officer of the bank have carefully examined the information together with relevant documents given by the applicant/s and satisfied with the bona-fide of these information and documents. Further, I as the Authorized Officer of the bank undertake at all times, to exercise due diligence on the transactions carried out by the cardholder on his / her EFTC in foreign exchange and to suspend the availability of foreign exchange on the EFTC if reasonable grounds exist to suspect that foreign exchange transactions which are not permitted in terms of Directions No. 03 of 2021 dated 18 March 2021 issued under the provisions of the Foreign Exchange Act, No. 12 of 2017 are being carried out on the EFTC, in violation of the undertaking given by the card holders and to bring the matter to the attention of the Director - Department of Foreign Exchange.
+              </p>
               <SignaturePad
                 signature={formData.authorizedOfficerSignature}
                 onSignatureChange={(sig) => updateFormData({ authorizedOfficerSignature: sig })}
@@ -468,56 +447,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
           </div>
         </div>
 
-        {/* Date */}
-        <div className="bg-gray-50 p-6 rounded-lg border border-gray-300">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.signatureDate}
-                readOnly
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 font-semibold"
-              />
-              <p className="text-xs text-gray-500 mt-1">Format: DD/MM/YYYY</p>
-            </div>
-            <div className="flex items-center justify-center">
-              <div className="text-center">
-                <CheckCircle2 className="text-green-600 mx-auto mb-2" size={48} />
-                <p className="text-sm font-semibold text-gray-900">Application Date</p>
-                <p className="text-xs text-gray-600">Automatically captured</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Submission Note */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg border-2 border-green-300">
-          <div className="flex items-start gap-3">
-            <CheckCircle2 className="text-green-600 flex-shrink-0 mt-1" size={24} />
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">Ready to Submit Your Application</h4>
-              <p className="text-gray-700 text-sm mb-3">
-                Please review all information carefully before clicking the "Complete" button. Once submitted, your application will be processed by our credit assessment team.
-              </p>
-              <div className="bg-white p-3 rounded border border-green-200">
-                <p className="text-xs text-gray-600">
-                  <strong>What happens next:</strong>
-                </p>
-                <ul className="text-xs text-gray-600 mt-2 space-y-1 ml-4 list-disc">
-                  <li>An authorized bank officer will review your application</li>
-                  <li>Credit verification will be conducted</li>
-                  <li>You will be contacted within 3-5 business days</li>
-                  <li>Additional documents may be requested if needed</li>
-                  <li>Upon approval, your card will be delivered to your chosen address</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   );

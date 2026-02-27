@@ -237,7 +237,7 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Visa Number <span className="text-red-500">*</span>
+                      Visa Number
                     </label>
                     <input
                       type="text"
@@ -249,7 +249,7 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Visa Type <span className="text-red-500">*</span>
+                      Visa Type
                     </label>
                     <input
                       type="text"
@@ -261,7 +261,7 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Visa Expiry Date <span className="text-red-500">*</span>
+                      Visa Expiry Date
                     </label>
                     <input
                       type="date"

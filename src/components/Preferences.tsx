@@ -20,18 +20,6 @@ export default function Preferences({ formData, updateFormData }: Props) {
     'Mobile & internet banking services',
   ];
 
-  const toggleVASOption = (option: string) => {
-    const current = formData.selectedVAS || [];
-    const exists = current.includes(option);
-    const next = exists ? current.filter((o) => o !== option) : [...current, option];
-    updateFormData({ selectedVAS: next });
-  };
-
-  const toggleAllVAS = () => {
-    const allSelected = vasOptions.every((o) => formData.selectedVAS?.includes(o));
-    updateFormData({ selectedVAS: allSelected ? [] : vasOptions });
-  };
-
   return (
     <div>
       <div className="flex items-center gap-3 mb-2">
@@ -107,14 +95,14 @@ export default function Preferences({ formData, updateFormData }: Props) {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Payment Option <span className="text-red-500">*</span>
+                    Special Settlement Instructions <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={formData.settlementPaymentOption}
                     onChange={(e) => updateFormData({ settlementPaymentOption: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                   >
-                    <option value="">Select Payment Option</option>
+                    <option value="">Select Settlement Instruction</option>
                     <option value="Minimum Payment">Minimum Payment</option>
                     <option value="100% Outstanding">100% Outstanding per Month</option>
                   </select>
@@ -132,71 +120,45 @@ export default function Preferences({ formData, updateFormData }: Props) {
           </h3>
 
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Value Added Services <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-6">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="valueAddedServices"
-                    value="Need"
-                    checked={formData.valueAddedServices === 'Need'}
-                    onChange={(e) => updateFormData({ valueAddedServices: e.target.value })}
-                    className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
-                  />
-                  <span className="ml-2 text-gray-700">Need</span>
-                </label>
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="valueAddedServices"
-                    value="Not Need"
-                    checked={formData.valueAddedServices === 'Not Need'}
-                    onChange={(e) => updateFormData({ valueAddedServices: e.target.value })}
-                    className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
-                  />
-                  <span className="ml-2 text-gray-700">Not Need</span>
-                </label>
-              </div>
+            <div className="bg-white p-4 rounded-lg border border-blue-200 space-y-4">
+              <p className="text-sm text-gray-700">
+                By default our Bank will provide Value Added Services including SMS Alerts, Transaction Alerts, Monthly Payment Reminders, PDF E-Statements and Mobile/ Internet Banking Services.
+              </p>
+
+              <p className="text-sm text-gray-700">
+                If you <strong>DO NOT</strong> wish to subscribe for any of the above Value Added Services, please submit a written request along with this application.
+              </p>
+
+              <p className="text-sm text-gray-700">
+                If you not wish to receive PDF E-Statements, kindly notify the address to send the paper statements. The address should be Home, Correspondence, Work.
+              </p>
             </div>
 
-            {formData.valueAddedServices === 'Need' && (
-              <div className="bg-white p-4 rounded-lg border border-blue-200">
-                <p className="text-sm text-gray-700 mb-3">
-                  <strong>Value-Added Services provided by the Bank:</strong>
-                </p>
-                <div className="space-y-2">
-                  {vasOptions.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.selectedVAS?.includes(opt) ?? false}
-                        onChange={() => toggleVASOption(opt)}
-                        className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
-                      />
-                      <span>{opt}</span>
-                    </label>
-                  ))}
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-800 cursor-pointer pt-2 border-t border-blue-100 mt-2">
-                    <input
-                      type="checkbox"
-                      checked={vasOptions.every((opt) => formData.selectedVAS?.includes(opt))}
-                      onChange={toggleAllVAS}
-                      className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
-                    />
-                    <span>Select All</span>
-                  </label>
-                </div>
-              </div>
-            )}
+            <div>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.valueAddedServices === 'Not Need'}
+                  onChange={(e) =>
+                    updateFormData({
+                      valueAddedServices: e.target.checked ? 'Not Need' : '',
+                      vasWrittenRequestUpload: e.target.checked ? formData.vasWrittenRequestUpload : '',
+                    })
+                  }
+                  className="mt-1 w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                />
+                <span className="text-sm text-gray-700">
+                  I do NOT wish to subscribe for any of the above Value Added Services
+                  <span className="text-red-500"> *</span>
+                </span>
+              </label>
+            </div>
 
             {showVASFields && (
               <div className="space-y-4 mt-4 pt-4 border-t border-blue-200">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Upload Written Request <span className="text-red-500">*</span>
+                    Upload Written Request (If you do not wish to subscribe) <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="file"
@@ -209,22 +171,6 @@ export default function Preferences({ formData, updateFormData }: Props) {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
                   />
                   <p className="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, PNG</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Paper Statement Address (If PDF e-Statement not required)
-                  </label>
-                  <select
-                    value={formData.paperStatementAddress}
-                    onChange={(e) => updateFormData({ paperStatementAddress: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-                  >
-                    <option value="">Select Address</option>
-                    <option value="Home Address">Home Address</option>
-                    <option value="Correspondence Address">Correspondence Address</option>
-                    <option value="Work Address">Work Address</option>
-                  </select>
                 </div>
               </div>
             )}

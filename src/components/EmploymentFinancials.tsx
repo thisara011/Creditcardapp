@@ -146,6 +146,68 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
           </select>
         </div>
 
+        {/* Extended Due Diligence (EDD) Question */}
+        <div className="border-t-2 border-gray-200 pt-6 mt-6">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Is Extended Due Diligence (EDD) Required? <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-6">
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="radio"
+                name="requiresEDD"
+                value="Yes"
+                checked={formData.requiresEDD === 'Yes'}
+                onChange={(e) => updateFormData({ requiresEDD: e.target.value })}
+                className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+              />
+              <span className="ml-2 text-gray-700">Yes</span>
+            </label>
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="radio"
+                name="requiresEDD"
+                value="No"
+                checked={formData.requiresEDD === 'No'}
+                onChange={(e) => updateFormData({ requiresEDD: e.target.value })}
+                className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+              />
+              <span className="ml-2 text-gray-700">No</span>
+            </label>
+          </div>
+        </div>
+
+        {/* EDD Form Upload - Conditional */}
+        {formData.requiresEDD === 'Yes' && (
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+            <div className="flex gap-3">
+              <AlertCircle className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Complete the EDD and Upload KYC-EDD Form <span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        updateFormData({ eddFormUpload: e.target.files[0].name });
+                      }
+                    }}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                  />
+                  <Upload className="text-[#C8102E] flex-shrink-0" size={20} />
+                </div>
+                <p className="text-xs text-gray-600 mt-2">Accepted formats: PDF, JPG, PNG (file capacity less than 5 MB)</p>
+                {formData.eddFormUpload && (
+                  <p className="text-xs text-green-600 mt-2">✓ File uploaded: {formData.eddFormUpload}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Employer Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -511,7 +573,7 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Are you involved in politics, holding a position in a political party, or related to a member of the Cabinet, Parliament, local government authority, or holding an executive position in a government institution? <span className="text-red-500">*</span>
+                Are you involved in politics, holding a position in a political party, or related to a member of the Cabinet, Parliament, local government authority, military officers, judicial officers, or holding an executive position in a government institution? <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-6">
                 <label className="flex items-center cursor-pointer">

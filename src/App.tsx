@@ -4,10 +4,12 @@ import React, { useState } from 'react';
 import ContactResidence from './components/ContactResidence';
 import Declaration from './components/Declaration';
 import EmploymentFinancials from './components/EmploymentFinancials';
+import IncompleteApplicationModal from './components/IncompleteApplicationModal';
 import JointApplicantsReferees from './components/JointApplicantsReferees';
 import PersonalDetails from './components/PersonalDetails';
 import Preferences from './components/Preferences';
 import ProductSelection from './components/ProductSelection';
+import { formatMissingFields, validateRequiredFields } from './utils/formValidation';
 
 export interface FormData {
   // Step 1: Product Selection
@@ -70,6 +72,8 @@ export interface FormData {
   isPEPRelated: string;
   pepNatureOfRelationship: string;
   pepFormUpload: string;
+  requiresEDD: string;
+  eddFormUpload: string;
 
   // Step 4: Supplementary Card
   requireSupplementaryCard: string;
@@ -90,6 +94,7 @@ export interface FormData {
   suppTelephone: string;
   suppRequestedCreditLimit: number;
   suppSignature: string;
+  suppPassportBioPage: string;
 
   // Step 4: Referees (removed joint applicant, keeping 2 referees)
   referee1Name: string;
@@ -156,6 +161,9 @@ export interface FormData {
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [showIncompleteModal, setShowIncompleteModal] = useState(false);
+  const [missingFieldsText, setMissingFieldsText] = useState('');
+  const [isSavingIncomplete, setIsSavingIncomplete] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     cardType: '',
     requestedCreditLimit: 100000,
@@ -208,6 +216,8 @@ export default function App() {
     isPEPRelated: '',
     pepNatureOfRelationship: '',
     pepFormUpload: '',
+    requiresEDD: '',
+    eddFormUpload: '',
     requireSupplementaryCard: '',
     suppTitle: '',
     suppFullName: '',
@@ -226,6 +236,7 @@ export default function App() {
     suppTelephone: '',
     suppRequestedCreditLimit: 0,
     suppSignature: '',
+    suppPassportBioPage: '',
     referee1Name: '',
     referee1NIC: '',
     referee1Mobile: '',
@@ -278,15 +289,95 @@ export default function App() {
 
   const totalSteps = 6;
 
+  // Check if all required business applicant documents are uploaded
+  const areAllDocumentsUploaded = () => {
+    const requiredDocs = [
+      formData.bizNicCopy,
+      formData.bizBusinessReg,
+      formData.bizBusinessCrib,
+      formData.bizBankStatements,
+      formData.bizCardApplicationReview,
+      formData.bizCribReports,
+    ];
+
+    // Check if supplementary card passport bio page is required
+    if (formData.requireSupplementaryCard === 'Yes' && formData.suppIdentityType === 'Passport') {
+      requiredDocs.push(formData.suppPassportBioPage);
+    }
+
+    return requiredDocs.every(doc => doc && doc.trim() !== '');
+  };
+
+  const isCompleteButtonDisabled = currentStep === totalSteps && !areAllDocumentsUploaded();
+  const buttonText = currentStep === totalSteps
+    ? (areAllDocumentsUploaded() ? 'Submit' : 'Save as Incomplete')
+    : 'Next';
+
   const updateFormData = (data: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...data }));
+  };
+
+  const handleSaveIncomplete = () => {
+    // Validate required fields
+    const missingFields = validateRequiredFields(formData);
+    const formattedMissingFields = formatMissingFields(missingFields);
+
+    console.log('Missing fields:', missingFields);
+    console.log('Formatted text:', formattedMissingFields);
+
+    // Show modal with missing fields
+    setMissingFieldsText(formattedMissingFields);
+    setShowIncompleteModal(true);
+  };
+
+  const handleConfirmSaveIncomplete = () => {
+    setIsSavingIncomplete(true);
+
+    // Simulate API call to save incomplete application
+    setTimeout(() => {
+      // Save to localStorage or send to backend
+      const applicationData = {
+        formData,
+        savedAt: new Date().toISOString(),
+        status: 'incomplete',
+      };
+
+      localStorage.setItem('creditCardApplication', JSON.stringify(applicationData));
+
+      setIsSavingIncomplete(false);
+      setShowIncompleteModal(false);
+
+      // Show success message or redirect
+      alert('Application saved as incomplete. You can continue later.');
+      // Optionally: window.location.href = '/dashboard';
+    }, 1000);
+  };
+
+  const handleCancelSaveIncomplete = () => {
+    setShowIncompleteModal(false);
   };
 
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (currentStep === totalSteps && areAllDocumentsUploaded()) {
+      // Submit the form if all documents are uploaded
+      handleSubmitForm();
     }
+  };
+
+  const handleSubmitForm = () => {
+    // TODO: Implement actual form submission
+    const applicationData = {
+      formData,
+      submittedAt: new Date().toISOString(),
+      status: 'submitted',
+    };
+
+    localStorage.setItem('creditCardApplication', JSON.stringify(applicationData));
+    alert('Application submitted successfully!');
+    // Optionally: window.location.href = '/confirmation';
   };
 
   const prevStep = () => {
@@ -400,16 +491,32 @@ export default function App() {
               Previous
             </button>
             <button
-              onClick={nextStep}
-              disabled={currentStep === totalSteps}
+              onClick={() => {
+                if (currentStep === totalSteps && !areAllDocumentsUploaded()) {
+                  handleSaveIncomplete();
+                } else if (currentStep === totalSteps && areAllDocumentsUploaded()) {
+                  handleSubmitForm();
+                } else {
+                  nextStep();
+                }
+              }}
               className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#C8102E] text-white hover:bg-[#A00D24] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {currentStep === totalSteps ? 'Complete' : 'Next'}
-              <ChevronRight size={20} />
+              {buttonText}
+              {currentStep !== totalSteps && <ChevronRight size={20} />}
             </button>
           </div>
         </div>
       </main>
+
+      {/* Incomplete Application Modal */}
+      <IncompleteApplicationModal
+        isOpen={showIncompleteModal}
+        missingFields={missingFieldsText}
+        onConfirm={handleConfirmSaveIncomplete}
+        onCancel={handleCancelSaveIncomplete}
+        isLoading={isSavingIncomplete}
+      />
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 px-4 mt-12">
