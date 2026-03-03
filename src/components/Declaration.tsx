@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function Declaration({ formData, updateFormData }: Props) {
-  const individualDocs: { key: keyof FormData; label: string }[] = [
+  const individualDocs: { key: keyof FormData; label: string; helper?: string }[] = [
     { key: 'indNicCopy', label: 'Customer National Identity Card (NIC)' },
     { key: 'indSalarySlips', label: 'Salary slips' },
     { key: 'indGuarantorNic', label: 'NIC of a Non-Related (NR) person (Guarantor/Reference)' },
@@ -39,7 +39,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
     return docs;
   };
 
-  const activeDocs = getActiveDocs();
+  const activeDocs = getActiveDocs() as Array<{ key: keyof FormData; label: string; helper?: string }>;
 
   // Shared file handler
   const handleFile = (key: keyof FormData, file: File) => {
@@ -50,6 +50,12 @@ export default function Declaration({ formData, updateFormData }: Props) {
   const handleFileSelect = (key: keyof FormData, files: FileList | null) => {
     if (!files || !files[0]) return;
     handleFile(key, files[0]);
+  };
+
+  // Safe form data accessor
+  const getFormValue = (key: keyof FormData): string => {
+    const value = (formData as unknown as Record<string, unknown>)[key];
+    return typeof value === 'string' ? value : '';
   };
 
   // Camera capture state
@@ -248,7 +254,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                   </thead>
                   <tbody className="divide-y divide-gray-100 bg-white">
                     {activeDocs.map((doc) => {
-                      const value = formData[doc.key] as string;
+                      const value = getFormValue(doc.key);
                       const uploaded = Boolean(value);
                       return (
                         <tr key={doc.key as string}>
@@ -280,7 +286,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                               <div className="flex items-center justify-start gap-2 flex-wrap">
                                 <button
                                   type="button"
-                                  onClick={() => openCamera(doc.key)}
+                                  onClick={() => openCamera(doc.key as keyof FormData)}
                                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
                                 >
                                   <Camera size={16} />
@@ -294,7 +300,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                                     type="file"
                                     accept=".pdf,image/*"
                                     className="hidden"
-                                    onChange={(e) => handleFileSelect(doc.key, e.target.files)}
+                                    onChange={(e) => handleFileSelect(doc.key as keyof FormData, e.target.files)}
                                   />
                                 </label>
 
@@ -321,7 +327,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
               {/* Mobile Card View - Shown only on Mobile */}
               <div className="md:hidden space-y-3">
                 {activeDocs.map((doc) => {
-                  const value = formData[doc.key] as string;
+                  const value = getFormValue(doc.key);
                   const uploaded = Boolean(value);
                   return (
                     <div key={doc.key as string} className="bg-white rounded-lg border border-gray-200 p-4">
@@ -354,7 +360,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => openCamera(doc.key)}
+                          onClick={() => openCamera(doc.key as keyof FormData)}
                           className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
                         >
                           <Camera size={16} />
@@ -368,7 +374,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                             type="file"
                             accept=".pdf,image/*"
                             className="hidden"
-                            onChange={(e) => handleFileSelect(doc.key, e.target.files)}
+                            onChange={(e) => handleFileSelect(doc.key as keyof FormData, e.target.files)}
                           />
                         </label>
 
@@ -377,6 +383,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                             type="button"
                             onClick={() => updateFormData({ [doc.key]: '' } as Partial<FormData>)}
                             className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
+                            title="Delete uploaded file"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -464,6 +471,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                   value={formData.signatureDate}
                   onChange={(e) => updateFormData({ signatureDate: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                  title="Signature date"
                 />
               </div>
             </div>
@@ -483,6 +491,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                     value={formData.suppSignatureDate}
                     onChange={(e) => updateFormData({ suppSignatureDate: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                    title="Supplementary cardholder signature date"
                   />
                 </div>
               </div>
@@ -505,6 +514,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                   value={formData.authorizedOfficerDate}
                   onChange={(e) => updateFormData({ authorizedOfficerDate: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                  title="Authorized officer signature date"
                 />
               </div>
             </div>

@@ -93,7 +93,6 @@ export interface FormData {
   suppHomeAddress: string;
   suppTelephone: string;
   suppRequestedCreditLimit: number;
-  suppSignature: string;
   suppPassportBioPage: string;
 
   // Step 4: Referees (removed joint applicant, keeping 2 referees)
@@ -291,7 +290,6 @@ export default function App() {
     declarationConsent: false,
     signatureDate: new Date().toLocaleDateString('en-GB'),
     bankName: '',
-    suppSignature: '',
     suppSignatureDate: new Date().toLocaleDateString('en-GB'),
     authorizedOfficerSignature: '',
     authorizedOfficerDate: new Date().toLocaleDateString('en-GB'),
@@ -324,7 +322,7 @@ export default function App() {
     : 'Next';
 
   const updateFormData = (data: Partial<FormData>) => {
-    setFormData(prev => ({ ...prev, ...data }));
+    setFormData((prev: FormData) => ({ ...prev, ...data }));
   };
 
   const handleSaveIncomplete = () => {
