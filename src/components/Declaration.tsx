@@ -99,7 +99,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
   useEffect(() => {
     if (!cameraOpen || !streamRef.current || !videoRef.current) return;
     videoRef.current.srcObject = streamRef.current;
-  }, [cameraOpen]);
+  }, [cameraOpen, facingMode]);
 
   const handleCameraCapture = () => {
     if (!cameraDocKey || !videoRef.current) return;
