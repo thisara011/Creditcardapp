@@ -23,10 +23,11 @@ export default function ProductSelection({ formData, updateFormData }: Props) {
 
       {/* Card Type Dropdown */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="card-type" className="block text-sm font-medium text-gray-700 mb-2">
           Card Type <span className="text-red-500">*</span>
         </label>
         <select
+          id="card-type"
           value={formData.cardType}
           onChange={(e) => updateFormData({ cardType: e.target.value })}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"

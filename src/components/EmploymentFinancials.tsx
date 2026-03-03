@@ -81,10 +81,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
       <div className="space-y-6">
         {/* Employment Sector */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="employment-sector" className="block text-sm font-medium text-gray-700 mb-2">
             Employment Sector <span className="text-red-500">*</span>
           </label>
           <select
+            id="employment-sector"
             value={formData.employmentSector}
             onChange={(e) => updateFormData({ employmentSector: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -98,10 +99,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
 
         {/* Nature of Business */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="nature-of-business" className="block text-sm font-medium text-gray-700 mb-2">
             Nature of Business <span className="text-red-500">*</span>
           </label>
           <select
+            id="nature-of-business"
             value={formData.natureOfBusiness}
             onChange={(e) => updateFormData({ natureOfBusiness: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -116,10 +118,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
         {/* Other Nature of Business */}
         {formData.natureOfBusiness === 'Other' && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="nature-of-business-other" className="block text-sm font-medium text-gray-700 mb-2">
               Specify Other Nature of Business <span className="text-red-500">*</span>
             </label>
             <input
+              id="nature-of-business-other"
               type="text"
               value={formData.natureOfBusinessOther}
               onChange={(e) => updateFormData({ natureOfBusinessOther: e.target.value })}
@@ -131,10 +134,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
 
         {/* Field of Employment */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="field-of-employment" className="block text-sm font-medium text-gray-700 mb-2">
             Field of Employment <span className="text-red-500">*</span>
           </label>
           <select
+            id="field-of-employment"
             value={formData.fieldOfEmployment}
             onChange={(e) => updateFormData({ fieldOfEmployment: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -190,6 +194,7 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                   <input
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
+                    title="Upload EDD form"
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
                         updateFormData({ eddFormUpload: e.target.files[0].name });
@@ -238,10 +243,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
 
         {/* Education Level */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="education-level" className="block text-sm font-medium text-gray-700 mb-2">
             Education Level <span className="text-red-500">*</span>
           </label>
           <select
+            id="education-level"
             value={formData.educationLevel}
             onChange={(e) => updateFormData({ educationLevel: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -254,10 +260,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
 
         {/* Position */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="designation" className="block text-sm font-medium text-gray-700 mb-2">
             Position <span className="text-red-500">*</span>
           </label>
           <select
+            id="designation"
             value={formData.designation}
             onChange={(e) => updateFormData({ designation: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -291,8 +298,9 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
           </label>
           <div className="flex gap-4 items-end">
             <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Years</label>
+              <label htmlFor="current-years" className="block text-xs font-medium text-gray-600 mb-1">Years</label>
               <input
+                id="current-years"
                 type="number"
                 min={0}
                 value={currentYears}
@@ -301,8 +309,9 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
               />
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Months</label>
+              <label htmlFor="current-months" className="block text-xs font-medium text-gray-600 mb-1">Months</label>
               <input
+                id="current-months"
                 type="number"
                 min={0}
                 max={11}
@@ -363,8 +372,9 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                 </label>
                 <div className="flex gap-4 items-end">
                   <div className="flex-1">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Years</label>
+                    <label htmlFor="prev-years" className="block text-xs font-medium text-gray-600 mb-1">Years</label>
                     <input
+                      id="prev-years"
                       type="number"
                       min={0}
                       value={prevYears}
@@ -373,8 +383,9 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                     />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Months</label>
+                    <label htmlFor="prev-months" className="block text-xs font-medium text-gray-600 mb-1">Months</label>
                     <input
+                      id="prev-months"
                       type="number"
                       min={0}
                       max={11}
@@ -387,10 +398,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="prev-designation" className="block text-sm font-medium text-gray-700 mb-2">
                   Previous Position
                 </label>
                 <select
+                  id="prev-designation"
                   value={formData.prevDesignation}
                   onChange={(e) => updateFormData({ prevDesignation: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -467,10 +479,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
 
         {/* Type of Residence */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="residence-type" className="block text-sm font-medium text-gray-700 mb-2">
             Type of Residence (billing proof required) <span className="text-red-500">*</span>
           </label>
           <select
+            id="residence-type"
             value={formData.residenceType}
             onChange={(e) => updateFormData({ residenceType: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -483,10 +496,11 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
 
         {/* Number of Dependents */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="number-of-dependents" className="block text-sm font-medium text-gray-700 mb-2">
             Number of Dependents <span className="text-red-500">*</span>
           </label>
           <input
+            id="number-of-dependents"
             type="number"
             value={formData.numberOfDependents}
             onChange={(e) => updateFormData({ numberOfDependents: Number(e.target.value) })}
@@ -655,6 +669,7 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
                     <input
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
+                      title="Upload PEP/EDD form"
                       onChange={(e) => {
                         if (e.target.files && e.target.files[0]) {
                           updateFormData({ pepFormUpload: e.target.files[0].name });

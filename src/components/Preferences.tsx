@@ -93,10 +93,11 @@ export default function Preferences({ formData, updateFormData }: Props) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="settlement-option" className="block text-sm font-medium text-gray-700 mb-2">
                     Special Settlement Instructions <span className="text-red-500">*</span>
                   </label>
                   <select
+                    id="settlement-option"
                     value={formData.settlementPaymentOption}
                     onChange={(e) => updateFormData({ settlementPaymentOption: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -266,10 +267,11 @@ export default function Preferences({ formData, updateFormData }: Props) {
             {showPAFields && (
               <div className="space-y-4 mt-4 pt-4 border-t border-purple-200">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="pa-title" className="block text-sm font-medium text-gray-700 mb-2">
                     Title <span className="text-red-500">*</span>
                   </label>
                   <select
+                    id="pa-title"
                     value={formData.paTitle}
                     onChange={(e) => updateFormData({ paTitle: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"

@@ -32,10 +32,11 @@ export default function PersonalDetails({ formData, updateFormData }: Props) {
 
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="title-personal" className="block text-sm font-medium text-gray-700 mb-2">
             Title <span className="text-red-500">*</span>
           </label>
           <select
+            id="title-personal"
             value={formData.title}
             onChange={(e) => updateFormData({ title: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -99,10 +100,11 @@ export default function PersonalDetails({ formData, updateFormData }: Props) {
 
         {/* Date of Birth */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="date-of-birth" className="block text-sm font-medium text-gray-700 mb-2">
             Date of Birth <span className="text-red-500">*</span>
           </label>
           <input
+            id="date-of-birth"
             type="date"
             value={formData.dateOfBirth}
             onChange={(e) => updateFormData({ dateOfBirth: e.target.value })}

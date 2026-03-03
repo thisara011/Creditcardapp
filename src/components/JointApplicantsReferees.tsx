@@ -80,10 +80,11 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
 
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="supp-title" className="block text-sm font-medium text-gray-700 mb-2">
                   Title <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="supp-title"
                   value={formData.suppTitle}
                   onChange={(e) => updateFormData({ suppTitle: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -147,10 +148,11 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
 
               {/* Date of Birth */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="supp-dob" className="block text-sm font-medium text-gray-700 mb-2">
                   Date of Birth <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="supp-dob"
                   type="date"
                   value={formData.suppDateOfBirth}
                   onChange={(e) => updateFormData({ suppDateOfBirth: e.target.value })}
@@ -225,10 +227,11 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="supp-passport-exp" className="block text-sm font-medium text-gray-700 mb-2">
                       Passport Expiry Date <span className="text-red-500">*</span>
                     </label>
                     <input
+                      id="supp-passport-exp"
                       type="date"
                       value={formData.suppPassportExpiry}
                       onChange={(e) => updateFormData({ suppPassportExpiry: e.target.value })}
@@ -260,10 +263,11 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="supp-visa-exp" className="block text-sm font-medium text-gray-700 mb-2">
                       Visa Expiry Date
                     </label>
                     <input
+                      id="supp-visa-exp"
                       type="date"
                       value={formData.suppVisaExpiry}
                       onChange={(e) => updateFormData({ suppVisaExpiry: e.target.value })}
@@ -275,10 +279,11 @@ export default function JointApplicantsReferees({ formData, updateFormData }: Pr
 
               {/* Relationship */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="supp-relationship" className="block text-sm font-medium text-gray-700 mb-2">
                   Relationship to Primary Applicant <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="supp-relationship"
                   value={formData.suppRelationship}
                   onChange={(e) => updateFormData({ suppRelationship: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"

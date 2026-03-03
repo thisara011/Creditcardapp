@@ -88,10 +88,11 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="payment-option-decl" className="block text-sm font-medium text-gray-700 mb-2">
                     Payment Option <span className="text-red-500">*</span>
                   </label>
                   <select
+                    id="payment-option-decl"
                     value={formData.settlementPaymentOption}
                     onChange={(e) => updateFormData({ settlementPaymentOption: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -160,10 +161,11 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
             {showVASFields && (
               <div className="space-y-4 mt-4 pt-4 border-t border-blue-200">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="vas-request-upload" className="block text-sm font-medium text-gray-700 mb-2">
                     Upload Written Request <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="vas-request-upload"
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png"
                     onChange={(e) => {
@@ -177,10 +179,11 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="paper-statement-addr" className="block text-sm font-medium text-gray-700 mb-2">
                     Paper Statement Address (If PDF e-Statement not required)
                   </label>
                   <select
+                    id="paper-statement-addr"
                     value={formData.paperStatementAddress}
                     onChange={(e) => updateFormData({ paperStatementAddress: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
@@ -392,10 +395,11 @@ export default function PreferencesDeclaration({ formData, updateFormData }: Pro
 
             {/* Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="sig-date-decl" className="block text-sm font-medium text-gray-700 mb-2">
                 Date <span className="text-red-500">*</span>
               </label>
               <input
+                id="sig-date-decl"
                 type="text"
                 value={formData.signatureDate}
                 readOnly
