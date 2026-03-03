@@ -129,7 +129,7 @@ export default function Preferences({ formData, updateFormData }: Props) {
             </div>
 
             <div className="bg-white p-4 rounded-lg border border-blue-200">
-              <p className="text-sm font-medium text-gray-900 mb-3">Select required services</p>
+              <p className="text-sm font-medium text-gray-900 mb-3">Deselected services are not required</p>
               <div className="space-y-3">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
