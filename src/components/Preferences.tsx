@@ -9,7 +9,6 @@ interface Props {
 
 export default function Preferences({ formData, updateFormData }: Props) {
   const showSettlementFields = formData.autoSettlement === 'Yes';
-  const showVASFields = formData.valueAddedServices === 'Not Need';
   const showPAFields = formData.requirePA === 'Yes';
 
   const vasOptions = [
@@ -120,59 +119,109 @@ export default function Preferences({ formData, updateFormData }: Props) {
           </h3>
 
           <div className="space-y-4">
-            <div className="bg-white p-4 rounded-lg border border-blue-200 space-y-4">
-              <p className="text-sm text-gray-700">
-                By default our Bank will provide Value Added Services including SMS Alerts, Transaction Alerts, Monthly Payment Reminders, PDF E-Statements and Mobile/ Internet Banking Services.
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <p className="text-sm text-gray-700 mb-3">
+                By default, the Bank provides the following Value-Added Services.
               </p>
-
-              <p className="text-sm text-gray-700">
-                If you <strong>DO NOT</strong> wish to subscribe for any of the above Value Added Services, please submit a written request along with this application.
-              </p>
-
-              <p className="text-sm text-gray-700">
-                If you not wish to receive PDF E-Statements, kindly notify the address to send the paper statements. The address should be Home, Correspondence, Work.
+              <p className="text-sm text-gray-700 font-medium">
+                Please indicate the services you require by ticking the relevant box(es).
               </p>
             </div>
 
-            <div>
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <p className="text-sm font-medium text-gray-900 mb-3">Select required services</p>
+              <div className="space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.vasSmsAlerts}
+                    onChange={(e) => updateFormData({ vasSmsAlerts: e.target.checked })}
+                    className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                  />
+                  <span className="text-sm text-gray-700">SMS Alerts</span>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.vasTransactionAlerts}
+                    onChange={(e) => updateFormData({ vasTransactionAlerts: e.target.checked })}
+                    className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                  />
+                  <span className="text-sm text-gray-700">Transaction Alerts</span>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.vasMonthlyReminders}
+                    onChange={(e) => updateFormData({ vasMonthlyReminders: e.target.checked })}
+                    className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                  />
+                  <span className="text-sm text-gray-700">Monthly Payment Reminders</span>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.vasPdfStatements}
+                    onChange={(e) => updateFormData({ vasPdfStatements: e.target.checked })}
+                    className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                  />
+                  <span className="text-sm text-gray-700">PDF e-Statements (If unselected, please complete the address section below)</span>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.vasMobileBanking}
+                    onChange={(e) => updateFormData({ vasMobileBanking: e.target.checked })}
+                    className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                  />
+                  <span className="text-sm text-gray-700">Mobile Banking</span>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.vasInternetBanking}
+                    onChange={(e) => updateFormData({ vasInternetBanking: e.target.checked })}
+                    className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
+                  />
+                  <span className="text-sm text-gray-700">Internet Banking</span>
+                </label>
+              </div>
+            </div>
+
+            {!formData.vasPdfStatements && (
+              <div className="bg-white p-4 rounded-lg border border-blue-200">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  Permanent Address for paper statement delivery
+                </label>
+                <input
+                  type="text"
+                  value={formData.vasPermanentAddress}
+                  onChange={(e) => updateFormData({ vasPermanentAddress: e.target.value })}
+                  placeholder="Enter permanent address"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                />
+              </div>
+            )}
+
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <p className="text-sm font-semibold text-gray-900 mb-3">Declaration</p>
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={formData.valueAddedServices === 'Not Need'}
-                  onChange={(e) =>
-                    updateFormData({
-                      valueAddedServices: e.target.checked ? 'Not Need' : '',
-                      vasWrittenRequestUpload: e.target.checked ? formData.vasWrittenRequestUpload : '',
-                    })
-                  }
+                  checked={formData.vasDeclarationConsent}
+                  onChange={(e) => updateFormData({ vasDeclarationConsent: e.target.checked })}
                   className="mt-1 w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
                 />
                 <span className="text-sm text-gray-700">
-                  I do NOT wish to subscribe for any of the above Value Added Services
+                  I confirm that I have read and understood the above Value-Added Services and I agree to subscribe to the services ticked by me.
                 </span>
               </label>
             </div>
-
-            {showVASFields && (
-              <div className="space-y-4 mt-4 pt-4 border-t border-blue-200">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Upload Written Request (If you do not wish to subscribe) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        updateFormData({ vasWrittenRequestUpload: e.target.files[0].name });
-                      }
-                    }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Accepted formats: PDF, JPG, PNG</p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

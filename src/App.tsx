@@ -117,10 +117,14 @@ export interface FormData {
   settlementPaymentOption: string;
 
   // Step 5: Value-Added Services
-  valueAddedServices: string;
-  vasWrittenRequestUpload: string;
-  paperStatementAddress: string;
-  selectedVAS: string[];
+  vasSmsAlerts: boolean;
+  vasTransactionAlerts: boolean;
+  vasMonthlyReminders: boolean;
+  vasPdfStatements: boolean;
+  vasMobileBanking: boolean;
+  vasInternetBanking: boolean;
+  vasPermanentAddress: string;
+  vasDeclarationConsent: boolean;
 
   // Step 5: Personal Assistant Authorization
   requirePA: string;
@@ -254,10 +258,14 @@ export default function App() {
     settlementAccountNumber: '',
     settlementBranch: '',
     settlementPaymentOption: '',
-    valueAddedServices: '',
-    vasWrittenRequestUpload: '',
-    paperStatementAddress: '',
-    selectedVAS: [],
+    vasSmsAlerts: true,
+    vasTransactionAlerts: true,
+    vasMonthlyReminders: true,
+    vasPdfStatements: true,
+    vasMobileBanking: true,
+    vasInternetBanking: true,
+    vasPermanentAddress: '',
+    vasDeclarationConsent: false,
     requirePA: '',
     paTitle: '',
     paName: '',

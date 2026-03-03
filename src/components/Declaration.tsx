@@ -218,27 +218,32 @@ export default function Declaration({ formData, updateFormData }: Props) {
 
           {formData.applicationType && (
             <div className="mt-4">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                 <p className="text-sm font-semibold text-gray-800">
                   {formData.applicationType === 'Business'
                     ? 'Required Business Applicant Documents'
                     : 'Required Individual Applicant Documents'}
                 </p>
-                <p className="text-xs text-gray-500 flex items-center gap-1">
-                  <CheckCircle className="text-green-500" size={14} />
-                  Uploaded&nbsp;&nbsp;
-                  <XCircle className="text-red-500" size={14} />
-                  Pending
+                <p className="text-xs text-gray-500 flex items-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <CheckCircle className="text-green-500" size={14} />
+                    Uploaded
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <XCircle className="text-red-500" size={14} />
+                    Pending
+                  </span>
                 </p>
               </div>
 
-              <div className="overflow-x-auto rounded-lg border border-gray-200">
+              {/* Desktop Table View - Hidden on Mobile */}
+              <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200 text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-2 text-left font-medium text-gray-700">Document</th>
-                      <th className="px-4 py-2 text-center font-medium text-gray-700">Status</th>
-                      <th className="px-4 py-2 text-left font-medium text-gray-700">File & Upload</th>
+                      <th className="px-4 py-3 text-left font-medium text-gray-700">Document</th>
+                      <th className="px-4 py-3 text-center font-medium text-gray-700 w-24">Status</th>
+                      <th className="px-4 py-3 text-left font-medium text-gray-700">File & Upload</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 bg-white">
@@ -248,7 +253,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
                       return (
                         <tr key={doc.key as string}>
                           <td className="px-4 py-3 align-top">
-                            <div className="text-gray-900">{doc.label}</div>
+                            <div className="text-gray-900 font-medium">{doc.label}</div>
                             {doc.helper && (
                               <p className="text-xs text-gray-500 mt-1">{doc.helper}</p>
                             )}
@@ -273,26 +278,18 @@ export default function Declaration({ formData, updateFormData }: Props) {
                               </div>
 
                               <div className="flex items-center justify-start gap-2 flex-wrap">
-                                {/* Camera icon: open camera capture */}
                                 <button
                                   type="button"
-                                  title={uploaded ? "Recapture document" : "Capture document"}
-                                  aria-label={uploaded ? "Recapture document with camera" : "Capture document with camera"}
                                   onClick={() => openCamera(doc.key)}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
                                 >
                                   <Camera size={16} />
-                                  {uploaded ? 'Recapture' : 'Capture'}
+                                  Capture
                                 </button>
 
-                                {/* Folder icon: open file picker */}
-                                <label
-                                  title={uploaded ? "Reupload from device" : "Upload from device"}
-                                  aria-label={uploaded ? "Reupload document from device" : "Upload document from device"}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
-                                >
+                                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300">
                                   <FolderOpen size={16} />
-                                  {uploaded ? 'Reupload' : 'Upload'}
+                                  Upload
                                   <input
                                     type="file"
                                     accept=".pdf,image/*"
@@ -301,14 +298,11 @@ export default function Declaration({ formData, updateFormData }: Props) {
                                   />
                                 </label>
 
-                                {/* Delete button - only show if uploaded */}
                                 {uploaded && (
                                   <button
                                     type="button"
-                                    title="Remove document"
-                                    aria-label="Remove uploaded document"
                                     onClick={() => updateFormData({ [doc.key]: '' } as Partial<FormData>)}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
                                   >
                                     <Trash2 size={16} />
                                     Remove
@@ -323,7 +317,77 @@ export default function Declaration({ formData, updateFormData }: Props) {
                   </tbody>
                 </table>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+
+              {/* Mobile Card View - Shown only on Mobile */}
+              <div className="md:hidden space-y-3">
+                {activeDocs.map((doc) => {
+                  const value = formData[doc.key] as string;
+                  const uploaded = Boolean(value);
+                  return (
+                    <div key={doc.key as string} className="bg-white rounded-lg border border-gray-200 p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900">{doc.label}</div>
+                          {doc.helper && (
+                            <p className="text-xs text-gray-500 mt-1">{doc.helper}</p>
+                          )}
+                        </div>
+                        <div className="ml-2">
+                          {uploaded ? (
+                            <CheckCircle className="text-green-500" size={20} />
+                          ) : (
+                            <XCircle className="text-red-400" size={20} />
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mb-3">
+                        {uploaded ? (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
+                            {value}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-400 italic">No file uploaded</span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openCamera(doc.key)}
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                        >
+                          <Camera size={16} />
+                          Capture
+                        </button>
+
+                        <label className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300">
+                          <FolderOpen size={16} />
+                          Upload
+                          <input
+                            type="file"
+                            accept=".pdf,image/*"
+                            className="hidden"
+                            onChange={(e) => handleFileSelect(doc.key, e.target.files)}
+                          />
+                        </label>
+
+                        {uploaded && (
+                          <button
+                            type="button"
+                            onClick={() => updateFormData({ [doc.key]: '' } as Partial<FormData>)}
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-xs text-gray-500 mt-3">
                 You can upload clear photos (via camera) or files from your device (PDF / images). Ensure all information is readable.
               </p>
             </div>
