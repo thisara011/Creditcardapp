@@ -1,6 +1,6 @@
 import { Camera, CheckCircle, FileText, FolderOpen, SwitchCamera, Trash2, XCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { FormData } from '../App';
+import { DocumentPage, FormData } from '../App';
 import SignaturePad from './SignaturePad';
 
 interface Props {
@@ -41,15 +41,90 @@ export default function Declaration({ formData, updateFormData }: Props) {
 
   const activeDocs = getActiveDocs() as Array<{ key: keyof FormData; label: string; helper?: string }>;
 
-  // Shared file handler
-  const handleFile = (key: keyof FormData, file: File) => {
-    if (!file) return;
-    updateFormData({ [key]: file.name } as Partial<FormData>);
+  const getDocPages = (key: keyof FormData): DocumentPage[] => {
+    return formData.documentUploads?.[key as string] ?? [];
   };
 
-  const handleFileSelect = (key: keyof FormData, files: FileList | null) => {
-    if (!files || !files[0]) return;
-    handleFile(key, files[0]);
+  const updateDocumentPages = (key: keyof FormData, pages: DocumentPage[]) => {
+    const reIndexedPages = pages.map((page, index) => ({
+      ...page,
+      pageNumber: index + 1,
+    }));
+
+    const nextUploads: Record<string, DocumentPage[]> = {
+      ...(formData.documentUploads ?? {}),
+      [key as string]: reIndexedPages,
+    };
+
+    if (reIndexedPages.length === 0) {
+      delete nextUploads[key as string];
+    }
+
+    updateFormData({
+      documentUploads: nextUploads,
+      [key]: reIndexedPages.length > 0 ? `${reIndexedPages.length} page(s) attached` : '',
+    } as Partial<FormData>);
+  };
+
+  const fileToDataUrl = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result);
+          return;
+        }
+        reject(new Error('Failed to read file.'));
+      };
+      reader.onerror = () => reject(new Error('Failed to read file.'));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const addDocumentPage = (key: keyof FormData, page: Omit<DocumentPage, 'pageNumber'>) => {
+    const existingPages = getDocPages(key);
+    const nextPage: DocumentPage = {
+      ...page,
+      pageNumber: existingPages.length + 1,
+    };
+    const updatedPages = [...existingPages, nextPage];
+    updateDocumentPages(key, updatedPages);
+    return nextPage;
+  };
+
+  const handleFileSelect = async (key: keyof FormData, files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    const selectedFiles = Array.from(files);
+    const existingPages = getDocPages(key);
+
+    let nextPages = [...existingPages];
+    for (const file of selectedFiles) {
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        nextPages.push({
+          id: `${key}-${Date.now()}-${nextPages.length + 1}`,
+          name: file.name,
+          dataUrl,
+          source: 'upload',
+          capturedAt: new Date().toISOString(),
+          pageNumber: nextPages.length + 1,
+        });
+      } catch (error) {
+        console.error('Unable to process selected file', error);
+      }
+    }
+
+    updateDocumentPages(key, nextPages);
+  };
+
+  const removeDocumentPage = (key: keyof FormData, pageId: string) => {
+    const remainingPages = getDocPages(key).filter((page) => page.id !== pageId);
+    updateDocumentPages(key, remainingPages);
+  };
+
+  const clearDocument = (key: keyof FormData) => {
+    updateDocumentPages(key, []);
   };
 
   // Safe form data accessor
@@ -61,6 +136,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
   // Camera capture state
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraDocKey, setCameraDocKey] = useState<keyof FormData | null>(null);
+  const [capturedPreviewUrl, setCapturedPreviewUrl] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment'); // Start with back camera
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -76,6 +152,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
     stopCamera();
     setCameraOpen(false);
     setCameraDocKey(null);
+    setCapturedPreviewUrl(null);
     setFacingMode('environment'); // Reset to back camera for next time
   };
 
@@ -87,6 +164,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
       });
       streamRef.current = stream;
       setCameraDocKey(key);
+      setCapturedPreviewUrl(null);
       setFacingMode(preferredFacingMode);
       setCameraOpen(true);
     } catch (err) {
@@ -109,6 +187,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
 
   const handleCameraCapture = () => {
     if (!cameraDocKey || !videoRef.current) return;
+
     const video = videoRef.current;
     const canvas = document.createElement('canvas');
     const width = video.videoWidth || 1280;
@@ -124,8 +203,17 @@ export default function Declaration({ formData, updateFormData }: Props) {
         const file = new File([blob], `captured-${cameraDocKey}-${Date.now()}.jpg`, {
           type: 'image/jpeg',
         });
-        handleFile(cameraDocKey, file);
-        closeCamera();
+        const previewDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        const addedPage = addDocumentPage(cameraDocKey, {
+          id: `${cameraDocKey}-${Date.now()}`,
+          name: file.name,
+          dataUrl: previewDataUrl,
+          source: 'camera',
+          capturedAt: new Date().toISOString(),
+        });
+        if (addedPage) {
+          setCapturedPreviewUrl(previewDataUrl);
+        }
       },
       'image/jpeg',
       0.9
@@ -148,40 +236,76 @@ export default function Declaration({ formData, updateFormData }: Props) {
               <h3 className="text-base font-semibold text-gray-900">
                 Capture document photo
               </h3>
-              <div className="rounded-md overflow-hidden bg-black relative">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full h-64 object-contain bg-black"
-                />
-                {/* Switch Camera Button */}
-                <button
-                  type="button"
-                  onClick={switchCamera}
-                  className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors"
-                  title="Switch camera"
-                  aria-label="Switch between front and back camera"
-                >
-                  <SwitchCamera size={20} className="text-gray-700" />
-                </button>
-              </div>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={closeCamera}
-                  className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCameraCapture}
-                  className="px-4 py-2 text-sm rounded-md bg-[#C8102E] text-white hover:bg-[#A00D24]"
-                >
-                  Capture & Use
-                </button>
-              </div>
+              {capturedPreviewUrl ? (
+                <>
+                  <div className="rounded-md overflow-hidden border border-gray-200 bg-gray-50">
+                    <img
+                      src={capturedPreviewUrl}
+                      alt="Captured page preview"
+                      className="w-full h-64 object-contain"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    {cameraDocKey ? `${getDocPages(cameraDocKey).length}` : '0'} page(s) added.
+                  </p>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={closeCamera}
+                      className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    >
+                      Finish
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCapturedPreviewUrl(null)}
+                      className="px-4 py-2 text-sm rounded-md bg-[#C8102E] text-white hover:bg-[#A00D24] disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    >
+                      Add Another Page
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="rounded-md overflow-hidden bg-black relative">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      className="w-full h-64 object-contain bg-black"
+                    />
+                    {/* Switch Camera Button */}
+                    <button
+                      type="button"
+                      onClick={switchCamera}
+                      className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-colors"
+                      title="Switch camera"
+                      aria-label="Switch between front and back camera"
+                    >
+                      <SwitchCamera size={20} className="text-gray-700" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    {cameraDocKey ? `${getDocPages(cameraDocKey).length}` : '0'} page(s) added.
+                  </p>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={closeCamera}
+                      className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCameraCapture}
+                      className="px-4 py-2 text-sm rounded-md bg-[#C8102E] text-white hover:bg-[#A00D24] disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    >
+                      Capture Page
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -254,8 +378,9 @@ export default function Declaration({ formData, updateFormData }: Props) {
                   </thead>
                   <tbody className="divide-y divide-gray-100 bg-white">
                     {activeDocs.map((doc) => {
+                      const pages = getDocPages(doc.key);
                       const value = getFormValue(doc.key);
-                      const uploaded = Boolean(value);
+                      const uploaded = pages.length > 0 || Boolean(value);
                       return (
                         <tr key={doc.key as string}>
                           <td className="px-4 py-3 align-top">
@@ -274,7 +399,11 @@ export default function Declaration({ formData, updateFormData }: Props) {
                           <td className="px-4 py-3 align-top">
                             <div className="space-y-2">
                               <div>
-                                {uploaded ? (
+                                {pages.length > 0 ? (
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
+                                    {pages.length} page(s) added
+                                  </span>
+                                ) : uploaded ? (
                                   <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
                                     {value}
                                   </span>
@@ -298,16 +427,20 @@ export default function Declaration({ formData, updateFormData }: Props) {
                                   Upload
                                   <input
                                     type="file"
-                                    accept=".pdf,image/*"
+                                    accept="image/*"
+                                    multiple
                                     className="hidden"
-                                    onChange={(e) => handleFileSelect(doc.key as keyof FormData, e.target.files)}
+                                    onChange={(e) => {
+                                      handleFileSelect(doc.key as keyof FormData, e.target.files);
+                                      e.currentTarget.value = '';
+                                    }}
                                   />
                                 </label>
 
                                 {uploaded && (
                                   <button
                                     type="button"
-                                    onClick={() => updateFormData({ [doc.key]: '' } as Partial<FormData>)}
+                                    onClick={() => clearDocument(doc.key as keyof FormData)}
                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
                                   >
                                     <Trash2 size={16} />
@@ -315,6 +448,32 @@ export default function Declaration({ formData, updateFormData }: Props) {
                                   </button>
                                 )}
                               </div>
+
+                              {pages.length > 0 && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  {pages.map((page) => (
+                                    <div key={page.id} className="flex items-center gap-2 p-2 border border-gray-200 rounded-md bg-gray-50">
+                                      <img
+                                        src={page.dataUrl}
+                                        alt={`${doc.label} page ${page.pageNumber}`}
+                                        className="w-12 h-12 rounded object-cover border border-gray-200"
+                                      />
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-xs font-medium text-gray-800 truncate">Page {page.pageNumber}</p>
+                                        <p className="text-[11px] text-gray-500 truncate">{page.name}</p>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeDocumentPage(doc.key as keyof FormData, page.id)}
+                                        className="p-1.5 rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
+                                        title={`Remove page ${page.pageNumber}`}
+                                      >
+                                        <Trash2 size={14} />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -327,8 +486,9 @@ export default function Declaration({ formData, updateFormData }: Props) {
               {/* Mobile Card View - Shown only on Mobile */}
               <div className="md:hidden space-y-3">
                 {activeDocs.map((doc) => {
+                  const pages = getDocPages(doc.key);
                   const value = getFormValue(doc.key);
-                  const uploaded = Boolean(value);
+                  const uploaded = pages.length > 0 || Boolean(value);
                   return (
                     <div key={doc.key as string} className="bg-white rounded-lg border border-gray-200 p-4">
                       <div className="flex items-start justify-between mb-3">
@@ -348,7 +508,11 @@ export default function Declaration({ formData, updateFormData }: Props) {
                       </div>
 
                       <div className="mb-3">
-                        {uploaded ? (
+                        {pages.length > 0 ? (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
+                            {pages.length} page(s) added
+                          </span>
+                        ) : uploaded ? (
                           <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
                             {value}
                           </span>
@@ -372,16 +536,20 @@ export default function Declaration({ formData, updateFormData }: Props) {
                           Upload
                           <input
                             type="file"
-                            accept=".pdf,image/*"
+                            accept="image/*"
+                            multiple
                             className="hidden"
-                            onChange={(e) => handleFileSelect(doc.key as keyof FormData, e.target.files)}
+                            onChange={(e) => {
+                              handleFileSelect(doc.key as keyof FormData, e.target.files);
+                              e.currentTarget.value = '';
+                            }}
                           />
                         </label>
 
                         {uploaded && (
                           <button
                             type="button"
-                            onClick={() => updateFormData({ [doc.key]: '' } as Partial<FormData>)}
+                            onClick={() => clearDocument(doc.key as keyof FormData)}
                             className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
                             title="Delete uploaded file"
                           >
@@ -389,13 +557,39 @@ export default function Declaration({ formData, updateFormData }: Props) {
                           </button>
                         )}
                       </div>
+
+                      {pages.length > 0 && (
+                        <div className="space-y-2">
+                          {pages.map((page) => (
+                            <div key={page.id} className="flex items-center gap-2 p-2 border border-gray-200 rounded-md bg-gray-50">
+                              <img
+                                src={page.dataUrl}
+                                alt={`${doc.label} page ${page.pageNumber}`}
+                                className="w-12 h-12 rounded object-cover border border-gray-200"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-medium text-gray-800 truncate">Page {page.pageNumber}</p>
+                                <p className="text-[11px] text-gray-500 truncate">{page.name}</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => removeDocumentPage(doc.key as keyof FormData, page.id)}
+                                className="p-1.5 rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
+                                title={`Remove page ${page.pageNumber}`}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
 
               <p className="text-xs text-gray-500 mt-3">
-                You can upload clear photos (via camera) or files from your device (PDF / images). Ensure all information is readable.
+                You can capture or upload any number of pages per document. Review page order and remove any unwanted page before submission.
               </p>
             </div>
           )}

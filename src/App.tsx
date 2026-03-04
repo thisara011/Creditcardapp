@@ -11,6 +11,15 @@ import Preferences from './components/Preferences';
 import ProductSelection from './components/ProductSelection';
 import { formatMissingFields, validateRequiredFields } from './utils/formValidation';
 
+export interface DocumentPage {
+  id: string;
+  name: string;
+  dataUrl: string;
+  source: 'camera' | 'upload';
+  capturedAt: string;
+  pageNumber: number;
+}
+
 export interface FormData {
   // Step 1: Product Selection
   cardType: string;
@@ -151,6 +160,7 @@ export interface FormData {
   bizBankStatements: string;
   bizCardApplicationReview: string;
   bizCribReports: string;
+  documentUploads: Record<string, DocumentPage[]>;
 
   // Step 7: Signatures & Declaration
   primarySignature: string;
@@ -286,6 +296,7 @@ export default function App() {
     bizBankStatements: '',
     bizCardApplicationReview: '',
     bizCribReports: '',
+    documentUploads: {},
     primarySignature: '',
     declarationConsent: false,
     signatureDate: new Date().toLocaleDateString('en-GB'),
