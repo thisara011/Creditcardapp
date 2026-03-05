@@ -169,14 +169,7 @@ export default function Preferences({ formData, updateFormData }: Props) {
                     onChange={(e) => updateFormData({ vasPdfStatements: e.target.checked })}
                     className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
                   />
-                  <div className="flex-1">
-                    <span className="text-sm text-gray-700">PDF e-Statements (If unselected, please complete the address section below)</span>
-                  </div>
-                  {!formData.vasPdfStatements && (
-                    <div className="bg-orange-100 border border-orange-300 rounded-lg px-3 py-2 whitespace-nowrap">
-                      <p className="text-xs font-medium text-orange-700">⚠ Charging fee applies</p>
-                    </div>
-                  )}
+                  <span className="text-sm text-gray-700">PDF e-Statements (If unselected, please complete the address section below)</span>
                 </label>
 
                 <label className="flex items-center gap-3 cursor-pointer">
