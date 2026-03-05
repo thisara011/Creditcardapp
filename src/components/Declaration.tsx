@@ -27,16 +27,27 @@ export default function Declaration({ formData, updateFormData }: Props) {
     { key: 'bizCardApplicationReview', label: 'Card Application Review Form' },
   ];
 
-  // Add conditional doc for supplementary card passport bio page
+  // Add conditional docs
   const getActiveDocs = () => {
     const docs = formData.applicationType === 'Business' ? businessDocs : individualDocs;
+    let activeDocs = [...docs];
+
+    // Add Billing Proof if correspondence address is different
+    if (formData.correspondenceAddressDifferent) {
+      const billingProofKey = formData.applicationType === 'Business' ? 'bizBillingProof' : 'indBillingProof';
+      activeDocs.push({
+        key: billingProofKey as keyof FormData,
+        label: 'Billing Proof Document',
+        helper: 'Required when correspondence address differs from permanent address.',
+      });
+    }
 
     // Add Supplementary Card Passport Bio Page if applicable
     if (formData.requireSupplementaryCard === 'Yes' && formData.suppIdentityType === 'Passport') {
-      return [...docs, { key: 'suppPassportBioPage', label: 'Supplementary Cardholder Passport Bio Page' }];
+      activeDocs.push({ key: 'suppPassportBioPage', label: 'Supplementary Cardholder Passport Bio Page' });
     }
 
-    return docs;
+    return activeDocs;
   };
 
   const activeDocs = getActiveDocs() as Array<{ key: keyof FormData; label: string; helper?: string }>;

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
 import { Home, MapPin } from 'lucide-react';
+import { useEffect } from 'react';
 import { FormData } from '../App';
 
 interface Props {
@@ -8,9 +8,9 @@ interface Props {
 }
 
 const sriLankanDistricts = [
-  'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 
-  'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 
-  'Mannar', 'Matale', 'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 
+  'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha',
+  'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala',
+  'Mannar', 'Matale', 'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa',
   'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'
 ];
 
@@ -128,7 +128,7 @@ export default function ContactResidence({ formData, updateFormData }: Props) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Address Line (Provide the billing proof document) <span className="text-red-500">*</span>
+                Address Line <span className="text-red-500">*</span>
               </label>
               <textarea
                 value={formData.correspondenceAddressLine}
@@ -136,10 +136,14 @@ export default function ContactResidence({ formData, updateFormData }: Props) {
                 placeholder="Enter correspondence address"
                 rows={3}
                 disabled={!isCorrespondenceDifferent}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent ${
-                  !isCorrespondenceDifferent ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                }`}
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent ${!isCorrespondenceDifferent ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                  }`}
               />
+              {isCorrespondenceDifferent && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Provide the billing proof document
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -150,9 +154,8 @@ export default function ContactResidence({ formData, updateFormData }: Props) {
                 onChange={(e) => updateFormData({ correspondenceDistrict: e.target.value })}
                 disabled={!isCorrespondenceDifferent}
                 aria-label="Correspondence address district"
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent ${
-                  !isCorrespondenceDifferent ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
-                }`}
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent ${!isCorrespondenceDifferent ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+                  }`}
               >
                 <option value="">Select District</option>
                 {sriLankanDistricts.map((district) => (
