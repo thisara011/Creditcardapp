@@ -39,6 +39,10 @@ export interface FormData {
   mothersMaidenName: string;
   dateOfBirth: string;
   mobileNumber: string;
+  mobileVerified: boolean;
+  mobileOTP: string;
+  mobileOTPSent: boolean;
+  mobileOTPResendCount: number;
   homeTelephone: string;
   emailAddress: string;
 
@@ -196,6 +200,10 @@ export default function App() {
     mothersMaidenName: '',
     dateOfBirth: '',
     mobileNumber: '',
+    mobileVerified: false,
+    mobileOTP: '',
+    mobileOTPSent: false,
+    mobileOTPResendCount: 0,
     homeTelephone: '',
     emailAddress: '',
     homeAddressLine: '',
