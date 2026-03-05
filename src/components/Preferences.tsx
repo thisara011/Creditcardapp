@@ -169,7 +169,14 @@ export default function Preferences({ formData, updateFormData }: Props) {
                     onChange={(e) => updateFormData({ vasPdfStatements: e.target.checked })}
                     className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
                   />
-                  <span className="text-sm text-gray-700">PDF e-Statements (If unselected, please complete the address section below)</span>
+                  <div className="flex-1">
+                    <span className="text-sm text-gray-700">PDF e-Statements (If unselected, please complete the address section below)</span>
+                  </div>
+                  {!formData.vasPdfStatements && (
+                    <div className="bg-orange-100 border border-orange-300 rounded-lg px-3 py-2 whitespace-nowrap">
+                      <p className="text-xs font-medium text-orange-700">⚠ Charging fee applies</p>
+                    </div>
+                  )}
                 </label>
 
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -195,7 +202,11 @@ export default function Preferences({ formData, updateFormData }: Props) {
             </div>
 
             {!formData.vasPdfStatements && (
-              <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                <div className="mb-4">
+                  <p className="text-sm font-medium text-orange-800 mb-2">⚠️ Note: There will be a charging fee for paper statement delivery</p>
+                  <p className="text-xs text-orange-700">If you choose not to receive PDF e-Statements, physical statements will be delivered to the address below with applicable charges.</p>
+                </div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
                   Permanent Address for paper statement delivery
                 </label>
