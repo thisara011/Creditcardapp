@@ -56,36 +56,6 @@ export default function Declaration({ formData, updateFormData }: Props) {
       activeDocs.push({ key: 'suppPassportBioPage', label: 'Supplementary Cardholder Passport Bio Page' });
     }
 
-    // Add Primary Cardholder Signature Upload
-    activeDocs.push({
-      key: 'primarySignatureUpload',
-      label: 'Primary Cardholder Signature Upload',
-      helper: 'Upload a scan or photo of your signature document.',
-    });
-
-    // Add Supplementary Cardholder Signature Upload if applicable
-    if (formData.requireSupplementaryCard === 'Yes') {
-      activeDocs.push({
-        key: 'suppSignatureUpload',
-        label: 'Supplementary Cardholder Signature Upload',
-        helper: 'Upload a scan or photo of supplementary cardholder signature document.',
-      });
-    }
-
-    // Add Signature Video Footage
-    activeDocs.push({
-      key: 'signatureVideoFootage',
-      label: 'Signature Signing Video Footage',
-      helper: 'Video recording of cardholder(s) signing the documents.',
-    });
-
-    // Add Authorized Officer Signature Upload
-    activeDocs.push({
-      key: 'authorizedOfficerSignatureUpload',
-      label: 'Signature of the Authorised Officer',
-      helper: 'Upload a scan or photo of the authorized officer signature document.',
-    });
-
     return activeDocs;
   };
 
@@ -692,16 +662,7 @@ export default function Declaration({ formData, updateFormData }: Props) {
             </p>
           </div>
         </div>
-        {/* Authorized Officer Declaration */}
-        <div className="bg-gray-50 p-6 rounded-lg border-2 border-gray-300">
-          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <FileText size={20} className="text-[#C8102E]" />
-            Signature of the Authorised Officer
-          </h4>
-          <p className="text-sm text-gray-700">
-            I, as the Authorized Officer of the bank have carefully examined the information together with relevant documents given by the applicant/s and satisfied with the bona-fide of these information and documents. Further, I as the Authorized Officer of the bank undertake at all times, to exercise due diligence on the transactions carried out by the cardholder on his / her EFTC in foreign exchange and to suspend the availability of foreign exchange on the EFTC if reasonable grounds exist to suspect that foreign exchange transactions which are not permitted in terms of Directions No. 03 of 2021 dated 18 March 2021 issued under the provisions of the Foreign Exchange Act, No. 12 of 2017 are being carried out on the EFTC, in violation of the undertaking given by the card holders and to bring the matter to the attention of the Director - Department of Foreign Exchange.
-          </p>
-        </div>
+
         {/* Submission Note */}
       </div>
     </div>
