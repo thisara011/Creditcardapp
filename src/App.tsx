@@ -157,6 +157,7 @@ export interface FormData {
   indGuarantorNic: string;
   indAddressProof: string;
   indBillingProof: string;
+  indOtherIncomeEvidence: string;
   indCribReports: string;
   // Business applicant documents
   bizNicCopy: string;
@@ -165,6 +166,7 @@ export interface FormData {
   bizBankStatements: string;
   bizCardApplicationReview: string;
   bizBillingProof: string;
+  bizOtherIncomeEvidence: string;
   bizCribReports: string;
   documentUploads: Record<string, DocumentPage[]>;
 
@@ -300,6 +302,7 @@ export default function App() {
     indGuarantorNic: '',
     indAddressProof: '',
     indBillingProof: '',
+    indOtherIncomeEvidence: '',
     indCribReports: '',
     bizNicCopy: '',
     bizBusinessReg: '',
@@ -307,6 +310,7 @@ export default function App() {
     bizBankStatements: '',
     bizCardApplicationReview: '',
     bizBillingProof: '',
+    bizOtherIncomeEvidence: '',
     bizCribReports: '',
     documentUploads: {},
     primarySignature: '',

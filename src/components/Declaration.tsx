@@ -42,6 +42,16 @@ export default function Declaration({ formData, updateFormData }: Props) {
       });
     }
 
+    // Add Other Income Documentary Evidence if other income is provided
+    if (formData.otherIncome && formData.otherIncome > 0) {
+      const otherIncomeEvidenceKey = formData.applicationType === 'Business' ? 'bizOtherIncomeEvidence' : 'indOtherIncomeEvidence';
+      activeDocs.push({
+        key: otherIncomeEvidenceKey as keyof FormData,
+        label: 'Other Income Documentary Evidence',
+        helper: 'Bank statements or other proof of additional income sources.',
+      });
+    }
+
     // Add Supplementary Card Passport Bio Page if applicable
     if (formData.requireSupplementaryCard === 'Yes' && formData.suppIdentityType === 'Passport') {
       activeDocs.push({ key: 'suppPassportBioPage', label: 'Supplementary Cardholder Passport Bio Page' });
