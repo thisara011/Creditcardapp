@@ -56,6 +56,13 @@ export default function Declaration({ formData, updateFormData }: Props) {
       activeDocs.push({ key: 'suppPassportBioPage', label: 'Supplementary Cardholder Passport Bio Page' });
     }
 
+    // Add Signature Video Footage
+    activeDocs.push({
+      key: 'signatureVideoFootage',
+      label: 'Signature Capturing Video Upload',
+      helper: 'Video recording of cardholder(s) signing the documents.',
+    });
+
     return activeDocs;
   };
 
