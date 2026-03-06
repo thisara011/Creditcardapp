@@ -168,6 +168,11 @@ export interface FormData {
   bizBillingProof: string;
   bizOtherIncomeEvidence: string;
   bizCribReports: string;
+  // Signature documents
+  primarySignatureUpload: string;
+  suppSignatureUpload: string;
+  signatureVideoFootage: string;
+  authorizedOfficerSignatureUpload: string;
   documentUploads: Record<string, DocumentPage[]>;
 
   // Step 7: Signatures & Declaration
@@ -312,6 +317,10 @@ export default function App() {
     bizBillingProof: '',
     bizOtherIncomeEvidence: '',
     bizCribReports: '',
+    primarySignatureUpload: '',
+    suppSignatureUpload: '',
+    signatureVideoFootage: '',
+    authorizedOfficerSignatureUpload: '',
     documentUploads: {},
     primarySignature: '',
     declarationConsent: false,

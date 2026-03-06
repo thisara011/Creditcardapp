@@ -1,7 +1,6 @@
 import { Camera, CheckCircle, FileText, FolderOpen, SwitchCamera, Trash2, XCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { DocumentPage, FormData } from '../App';
-import SignaturePad from './SignaturePad';
 
 interface Props {
   formData: FormData;
@@ -56,6 +55,36 @@ export default function Declaration({ formData, updateFormData }: Props) {
     if (formData.requireSupplementaryCard === 'Yes' && formData.suppIdentityType === 'Passport') {
       activeDocs.push({ key: 'suppPassportBioPage', label: 'Supplementary Cardholder Passport Bio Page' });
     }
+
+    // Add Primary Cardholder Signature Upload
+    activeDocs.push({
+      key: 'primarySignatureUpload',
+      label: 'Primary Cardholder Signature Upload',
+      helper: 'Upload a scan or photo of your signature document.',
+    });
+
+    // Add Supplementary Cardholder Signature Upload if applicable
+    if (formData.requireSupplementaryCard === 'Yes') {
+      activeDocs.push({
+        key: 'suppSignatureUpload',
+        label: 'Supplementary Cardholder Signature Upload',
+        helper: 'Upload a scan or photo of supplementary cardholder signature document.',
+      });
+    }
+
+    // Add Signature Video Footage
+    activeDocs.push({
+      key: 'signatureVideoFootage',
+      label: 'Signature Signing Video Footage',
+      helper: 'Video recording of cardholder(s) signing the documents.',
+    });
+
+    // Add Authorized Officer Signature Upload
+    activeDocs.push({
+      key: 'authorizedOfficerSignatureUpload',
+      label: 'Signature of the Authorised Officer',
+      helper: 'Upload a scan or photo of the authorized officer signature document.',
+    });
 
     return activeDocs;
   };
@@ -663,79 +692,16 @@ export default function Declaration({ formData, updateFormData }: Props) {
             </p>
           </div>
         </div>
-
-        {/* Signatures Section */}
-        <div className="bg-white p-6 rounded-lg border-2 border-gray-300">
-          <h4 className="font-semibold text-gray-900 mb-6 flex items-center gap-2">
+        {/* Authorized Officer Declaration */}
+        <div className="bg-gray-50 p-6 rounded-lg border-2 border-gray-300">
+          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <FileText size={20} className="text-[#C8102E]" />
-            Signatures & Dates
+            Signature of the Authorised Officer
           </h4>
-
-          <div className="space-y-6">
-            {/* Primary Cardholder Signature */}
-            <div className="border-t pt-6">
-              <h5 className="font-semibold text-gray-900 mb-4">Signature of the Primary Cardholder</h5>
-              <SignaturePad
-                signature={formData.primarySignature}
-                onSignatureChange={(sig) => updateFormData({ primarySignature: sig })}
-              />
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                <input
-                  type="date"
-                  value={formData.signatureDate}
-                  onChange={(e) => updateFormData({ signatureDate: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-                  title="Signature date"
-                />
-              </div>
-            </div>
-
-            {/* Supplementary Cardholder Signature (if applicable) */}
-            {formData.requireSupplementaryCard === 'Yes' && (
-              <div className="border-t pt-6">
-                <h5 className="font-semibold text-gray-900 mb-4">Signature of the Supplementary Cardholder</h5>
-                <SignaturePad
-                  signature={formData.suppSignature}
-                  onSignatureChange={(sig) => updateFormData({ suppSignature: sig })}
-                />
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                  <input
-                    type="date"
-                    value={formData.suppSignatureDate}
-                    onChange={(e) => updateFormData({ suppSignatureDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-                    title="Supplementary cardholder signature date"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Authorized Officer Signature */}
-            <div className="border-t pt-6 bg-gray-50 p-4 rounded">
-              <h5 className="font-semibold text-gray-900 mb-4">Signature of the Authorised Officer</h5>
-              <p className="text-sm text-gray-700 mb-4">
-                I, as the Authorized Officer of the bank have carefully examined the information together with relevant documents given by the applicant/s and satisfied with the bona-fide of these information and documents. Further, I as the Authorized Officer of the bank undertake at all times, to exercise due diligence on the transactions carried out by the cardholder on his / her EFTC in foreign exchange and to suspend the availability of foreign exchange on the EFTC if reasonable grounds exist to suspect that foreign exchange transactions which are not permitted in terms of Directions No. 03 of 2021 dated 18 March 2021 issued under the provisions of the Foreign Exchange Act, No. 12 of 2017 are being carried out on the EFTC, in violation of the undertaking given by the card holders and to bring the matter to the attention of the Director - Department of Foreign Exchange.
-              </p>
-              <SignaturePad
-                signature={formData.authorizedOfficerSignature}
-                onSignatureChange={(sig) => updateFormData({ authorizedOfficerSignature: sig })}
-              />
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                <input
-                  type="date"
-                  value={formData.authorizedOfficerDate}
-                  onChange={(e) => updateFormData({ authorizedOfficerDate: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-                  title="Authorized officer signature date"
-                />
-              </div>
-            </div>
-          </div>
+          <p className="text-sm text-gray-700">
+            I, as the Authorized Officer of the bank have carefully examined the information together with relevant documents given by the applicant/s and satisfied with the bona-fide of these information and documents. Further, I as the Authorized Officer of the bank undertake at all times, to exercise due diligence on the transactions carried out by the cardholder on his / her EFTC in foreign exchange and to suspend the availability of foreign exchange on the EFTC if reasonable grounds exist to suspect that foreign exchange transactions which are not permitted in terms of Directions No. 03 of 2021 dated 18 March 2021 issued under the provisions of the Foreign Exchange Act, No. 12 of 2017 are being carried out on the EFTC, in violation of the undertaking given by the card holders and to bring the matter to the attention of the Director - Department of Foreign Exchange.
+          </p>
         </div>
-
         {/* Submission Note */}
       </div>
     </div>
