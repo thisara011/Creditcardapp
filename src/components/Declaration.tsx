@@ -15,27 +15,14 @@ export default function Declaration({ formData, updateFormData }: Props) {
     { key: 'indAddressProof', label: 'Address proof (if current address differs from NIC)' },
   ];
 
-  const businessDocs: { key: keyof FormData; label: string; helper?: string }[] = [
-    { key: 'bizNicCopy', label: 'Customer National Identity Card (NIC)' },
-    { key: 'bizBusinessReg', label: 'Business Registration' },
-    {
-      key: 'bizBankStatements',
-      label: 'Bank Statements',
-      helper: 'Take last 6 months from other banks for new customers (not required for existing customers).',
-    },
-    { key: 'bizCardApplicationReview', label: 'Card Application Review Form' },
-  ];
-
   // Add conditional docs
   const getActiveDocs = () => {
-    const docs = formData.applicationType === 'Business' ? businessDocs : individualDocs;
-    let activeDocs = [...docs];
+    let activeDocs = [...individualDocs];
 
     // Add Billing Proof if correspondence address is different
     if (formData.correspondenceAddressDifferent) {
-      const billingProofKey = formData.applicationType === 'Business' ? 'bizBillingProof' : 'indBillingProof';
       activeDocs.push({
-        key: billingProofKey as keyof FormData,
+        key: 'indBillingProof',
         label: 'Billing Proof Document',
         helper: 'Required when correspondence address differs from permanent address.',
       });
@@ -43,9 +30,8 @@ export default function Declaration({ formData, updateFormData }: Props) {
 
     // Add Other Income Documentary Evidence if other income is provided
     if (formData.otherIncome && formData.otherIncome > 0) {
-      const otherIncomeEvidenceKey = formData.applicationType === 'Business' ? 'bizOtherIncomeEvidence' : 'indOtherIncomeEvidence';
       activeDocs.push({
-        key: otherIncomeEvidenceKey as keyof FormData,
+        key: 'indOtherIncomeEvidence',
         label: 'Other Income Documentary Evidence',
         helper: 'Bank statements or other proof of additional income sources.',
       });
@@ -336,50 +322,16 @@ export default function Declaration({ formData, updateFormData }: Props) {
             </div>
           </div>
         )}
-        {/* Application Type & Support Documents */}
+        {/* Support Documents */}
         <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
           <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
             <FileText size={20} className="text-[#C8102E]" />
-            Application Type & Support Documents
+            Support Documents
           </h3>
-
-          <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">
-              Select Application Type <span className="text-red-500">*</span>
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <label className="inline-flex items-center gap-2 text-sm text-gray-800 cursor-pointer">
-                <input
-                  type="radio"
-                  name="applicationType"
-                  value="Individual"
-                  checked={formData.applicationType === 'Individual'}
-                  onChange={(e) => updateFormData({ applicationType: e.target.value as FormData['applicationType'] })}
-                  className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
-                />
-                <span>Individual Applicant</span>
-              </label>
-              <label className="inline-flex items-center gap-2 text-sm text-gray-800 cursor-pointer">
-                <input
-                  type="radio"
-                  name="applicationType"
-                  value="Business"
-                  checked={formData.applicationType === 'Business'}
-                  onChange={(e) => updateFormData({ applicationType: e.target.value as FormData['applicationType'] })}
-                  className="w-4 h-4 text-[#C8102E] focus:ring-[#C8102E]"
-                />
-                <span>Business Applicant</span>
-              </label>
-            </div>
-          </div>
-
-          {formData.applicationType && (
-            <div className="mt-4">
+          <div className="mt-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                 <p className="text-sm font-semibold text-gray-800">
-                  {formData.applicationType === 'Business'
-                    ? 'Required Business Applicant Documents'
-                    : 'Required Individual Applicant Documents'}
+                  Required Documents
                 </p>
                 <p className="text-xs text-gray-500 flex items-center gap-2">
                   <span className="flex items-center gap-1">
@@ -619,7 +571,6 @@ export default function Declaration({ formData, updateFormData }: Props) {
                 You can capture or upload any number of pages per document. Review page order and remove any unwanted page before submission.
               </p>
             </div>
-          )}
         </div>
 
         {/* Declaration Text */}

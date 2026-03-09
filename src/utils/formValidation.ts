@@ -59,13 +59,10 @@ const REQUIRED_FIELDS: RequiredField[] = [
     { key: 'settlementPaymentOption', label: 'Settlement Payment Option', step: 5 },
 
     // Step 6: Documents & Declaration
-    { key: 'applicationType', label: 'Application Type', step: 6 },
-    { key: 'bizNicCopy', label: 'Business NIC Copy', step: 6 },
-    { key: 'bizBusinessReg', label: 'Business Registration', step: 6 },
-    { key: 'bizBusinessCrib', label: 'Business CRIB Report', step: 6 },
-    { key: 'bizBankStatements', label: 'Bank Statements', step: 6 },
-    { key: 'bizCardApplicationReview', label: 'Card Application Review', step: 6 },
-    { key: 'bizCribReports', label: 'CRIB Reports', step: 6 },
+    { key: 'indNicCopy', label: 'NIC Copy', step: 6 },
+    { key: 'indSalarySlips', label: 'Salary Slips', step: 6 },
+    { key: 'indGuarantorNic', label: 'Guarantor/Reference NIC', step: 6 },
+    { key: 'indAddressProof', label: 'Address Proof', step: 6 },
     { key: 'primarySignature', label: 'Primary Signature', step: 6 },
 ];
 
@@ -157,13 +154,8 @@ function shouldSkipField(fieldKey: keyof FormData, formData: FormData): boolean 
         return true;
     }
 
-    // Skip Individual documents if Business type
-    if (fieldKey.toString().startsWith('ind') && formData.applicationType !== 'Individual') {
-        return true;
-    }
-
-    // Skip Business documents if Individual type
-    if (fieldKey.toString().startsWith('biz') && formData.applicationType !== 'Business') {
+    // Skip business document fields (not used in current flow)
+    if (fieldKey.toString().startsWith('biz')) {
         return true;
     }
 
