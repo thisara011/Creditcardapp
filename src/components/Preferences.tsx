@@ -28,17 +28,17 @@ export default function Preferences({ formData, updateFormData }: Props) {
       <p className="text-gray-600 mb-6">Configure your account preferences and services</p>
 
       <div className="space-y-8">
-        {/* Auto-Settlement Preferences */}
+        {/* Auto-Settlement Preferences - YOUR CONVENIENCE */}
         <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
           <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <DollarSign size={20} />
-            Auto-Settlement Preferences
+            YOUR CONVENIENCE
           </h3>
 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Automatic Settlement from Seylan Bank Account? <span className="text-red-500">*</span>
+                Standing Order Instructions <span className="text-gray-600 text-xs font-normal">(If you wish to make settlements automatically from a Seylan Current/Savings account you maintain)</span> <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-6">
                 <label className="flex items-center cursor-pointer">

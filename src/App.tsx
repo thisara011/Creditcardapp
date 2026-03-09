@@ -62,6 +62,7 @@ export interface FormData {
   natureOfBusiness: string;
   natureOfBusinessOther: string;
   fieldOfEmployment: string;
+  fieldOfEmploymentOther: string;
   educationLevel: string;
   designation: string;
   designationOther: string;
@@ -226,6 +227,7 @@ export default function App() {
     natureOfBusiness: '',
     natureOfBusinessOther: '',
     fieldOfEmployment: '',
+    fieldOfEmploymentOther: '',
     educationLevel: '',
     designation: '',
     designationOther: '',

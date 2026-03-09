@@ -21,7 +21,7 @@ const fieldsOfEmployment = [
   'UNEMPLOYED', 'HOUSEWIFE', 'RFD SP', 'PILOTS', 'BANKERS', 'DOCTOR', 'ACCOUNTANTS',
   'LAWYERS', 'CONSULTANTS', 'BUSINESS ANALYST', 'ARCHITECT', 'IT PROFESSIONAL',
   'AGM / DGM', 'CEO / GM / MD', 'PROFESSIONAL', 'NURSE', 'SUPERVISOR / EXECUTIVE',
-  'CHEF / COOK', 'MERCHANDISER', 'MEDIA / JOURNALIST'
+  'CHEF / COOK', 'MERCHANDISER', 'MEDIA / JOURNALIST', 'Other'
 ];
 
 const educationLevels = [
@@ -149,6 +149,23 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
             ))}
           </select>
         </div>
+
+        {/* Other Field of Employment - Text Input */}
+        {formData.fieldOfEmployment === 'Other' && (
+          <div>
+            <label htmlFor="field-of-employment-other" className="block text-sm font-medium text-gray-700 mb-2">
+              Specify Your Field of Employment <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="field-of-employment-other"
+              placeholder="Enter your field of employment"
+              value={formData.fieldOfEmploymentOther || ''}
+              onChange={(e) => updateFormData({ fieldOfEmploymentOther: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+            />
+          </div>
+        )}
 
         {/* Extended Due Diligence (EDD) Question */}
         <div className="border-t-2 border-gray-200 pt-6 mt-6">

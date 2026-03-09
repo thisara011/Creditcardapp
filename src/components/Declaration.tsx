@@ -668,6 +668,20 @@ export default function Declaration({ formData, updateFormData }: Props) {
               I / We agree to comply with the terms & conditions applicable to the conduct of “internet / SMS Banking facilities” which I / We have read and understood (Please refer www.seylan.lk for rules and regulations)
             </p>
           </div>
+          <div className="mt-6 pt-6 border-t border-gray-300">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="declarationConsent"
+                checked={formData.declarationConsent}
+                onChange={(e) => updateFormData({ declarationConsent: e.target.checked })}
+                className="w-5 h-5 rounded border-2 border-gray-300 cursor-pointer accent-[#C8102E]"
+              />
+              <label htmlFor="declarationConsent" className="text-sm text-gray-700 cursor-pointer font-medium">
+                I / We have read and agree to all Terms, Conditions & Declarations
+              </label>
+            </div>
+          </div>
         </div>
 
         {/* Primary Cardholder Signature Upload Section */}
