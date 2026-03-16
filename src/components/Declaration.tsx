@@ -108,6 +108,27 @@ export default function Declaration({ formData, updateFormData }: Props) {
   const handleFileSelect = async (key: keyof FormData, files: FileList | null) => {
     if (!files || files.length === 0) return;
 
+    if (key === 'signatureVideoFootage') {
+      const file = files[files.length - 1];
+      if (!file) return;
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        updateDocumentPages('signatureVideoFootage', [
+          {
+            id: `signatureVideoFootage-${Date.now()}`,
+            name: file.name,
+            dataUrl,
+            source: 'upload',
+            capturedAt: new Date().toISOString(),
+            pageNumber: 1,
+          },
+        ]);
+      } catch (error) {
+        console.error('Unable to process selected video file', error);
+      }
+      return;
+    }
+
     const selectedFiles = Array.from(files);
     const existingPages = getDocPages(key);
 
@@ -150,9 +171,13 @@ export default function Declaration({ formData, updateFormData }: Props) {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraDocKey, setCameraDocKey] = useState<keyof FormData | null>(null);
   const [capturedPreviewUrl, setCapturedPreviewUrl] = useState<string | null>(null);
+  const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment'); // Start with back camera
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordingChunksRef = useRef<Blob[]>([]);
 
   const stopCamera = () => {
     if (streamRef.current) {
@@ -162,10 +187,15 @@ export default function Declaration({ formData, updateFormData }: Props) {
   };
 
   const closeCamera = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
     stopCamera();
     setCameraOpen(false);
     setCameraDocKey(null);
     setCapturedPreviewUrl(null);
+    setRecordedVideoUrl(null);
+    setIsRecording(false);
     setFacingMode('environment'); // Reset to back camera for next time
   };
 
@@ -178,6 +208,8 @@ export default function Declaration({ formData, updateFormData }: Props) {
       streamRef.current = stream;
       setCameraDocKey(key);
       setCapturedPreviewUrl(null);
+      setRecordedVideoUrl(null);
+      setIsRecording(false);
       setFacingMode(preferredFacingMode);
       setCameraOpen(true);
     } catch (err) {
@@ -200,6 +232,56 @@ export default function Declaration({ formData, updateFormData }: Props) {
 
   const handleCameraCapture = () => {
     if (!cameraDocKey || !videoRef.current) return;
+
+    if (cameraDocKey === 'signatureVideoFootage') {
+      if (!streamRef.current) return;
+
+      if (!isRecording) {
+        try {
+          const recorder = new MediaRecorder(streamRef.current, { mimeType: 'video/webm' });
+          mediaRecorderRef.current = recorder;
+          recordingChunksRef.current = [];
+
+          recorder.ondataavailable = (event) => {
+            if (event.data && event.data.size > 0) {
+              recordingChunksRef.current.push(event.data);
+            }
+          };
+
+          recorder.onstop = async () => {
+            const blob = new Blob(recordingChunksRef.current, { type: 'video/webm' });
+            const file = new File([blob], `signature-video-${Date.now()}.webm`, { type: 'video/webm' });
+            const previewUrl = URL.createObjectURL(blob);
+            setRecordedVideoUrl(previewUrl);
+            try {
+              const dataUrl = await fileToDataUrl(file);
+              updateDocumentPages('signatureVideoFootage', [
+                {
+                  id: `signatureVideoFootage-${Date.now()}`,
+                  name: file.name,
+                  dataUrl,
+                  source: 'camera',
+                  capturedAt: new Date().toISOString(),
+                  pageNumber: 1,
+                },
+              ]);
+            } catch (error) {
+              console.error('Unable to process recorded video', error);
+            }
+            setIsRecording(false);
+          };
+
+          recorder.start();
+          setIsRecording(true);
+        } catch (error) {
+          console.error('Unable to start video recording', error);
+          alert('Unable to start video recording on this device/browser.');
+        }
+      } else {
+        mediaRecorderRef.current?.stop();
+      }
+      return;
+    }
 
     const video = videoRef.current;
     const canvas = document.createElement('canvas');
@@ -247,19 +329,27 @@ export default function Declaration({ formData, updateFormData }: Props) {
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-4 space-y-4">
               <h3 className="text-base font-semibold text-gray-900">
-                Capture document photo
+                {cameraDocKey === 'signatureVideoFootage' ? 'Capture signature video' : 'Capture document photo'}
               </h3>
-              {capturedPreviewUrl ? (
+              {(cameraDocKey === 'signatureVideoFootage' ? recordedVideoUrl : capturedPreviewUrl) ? (
                 <>
                   <div className="rounded-md overflow-hidden border border-gray-200 bg-gray-50">
-                    <img
-                      src={capturedPreviewUrl}
-                      alt="Captured page preview"
-                      className="w-full h-64 object-contain"
-                    />
+                    {cameraDocKey === 'signatureVideoFootage' ? (
+                      <video
+                        src={recordedVideoUrl ?? ''}
+                        controls
+                        className="w-full h-64 object-contain bg-black"
+                      />
+                    ) : (
+                      <img
+                        src={capturedPreviewUrl ?? ''}
+                        alt="Captured page preview"
+                        className="w-full h-64 object-contain"
+                      />
+                    )}
                   </div>
                   <p className="text-xs text-gray-600">
-                    {cameraDocKey ? `${getDocPages(cameraDocKey).length}` : '0'} page(s) added.
+                    {cameraDocKey ? `${getDocPages(cameraDocKey).length}` : '0'} {cameraDocKey === 'signatureVideoFootage' ? 'video(s)' : 'page(s)'} added.
                   </p>
                   <div className="flex justify-end gap-3">
                     <button
@@ -271,10 +361,17 @@ export default function Declaration({ formData, updateFormData }: Props) {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setCapturedPreviewUrl(null)}
+                      onClick={() => {
+                        if (cameraDocKey === 'signatureVideoFootage') {
+                          clearDocument('signatureVideoFootage');
+                          setRecordedVideoUrl(null);
+                        } else {
+                          setCapturedPreviewUrl(null);
+                        }
+                      }}
                       className="px-4 py-2 text-sm rounded-md bg-[#C8102E] text-white hover:bg-[#A00D24] disabled:bg-gray-300 disabled:cursor-not-allowed"
                     >
-                      Add Another Page
+                      {cameraDocKey === 'signatureVideoFootage' ? 'Record Again' : 'Add Another Page'}
                     </button>
                   </div>
                 </>
@@ -299,8 +396,11 @@ export default function Declaration({ formData, updateFormData }: Props) {
                     </button>
                   </div>
                   <p className="text-xs text-gray-600">
-                    {cameraDocKey ? `${getDocPages(cameraDocKey).length}` : '0'} page(s) added.
+                    {cameraDocKey ? `${getDocPages(cameraDocKey).length}` : '0'} {cameraDocKey === 'signatureVideoFootage' ? 'video(s)' : 'page(s)'} added.
                   </p>
+                  {cameraDocKey === 'signatureVideoFootage' && isRecording && (
+                    <p className="text-xs text-red-600 font-medium">Recording in progress...</p>
+                  )}
                   <div className="flex justify-end gap-3">
                     <button
                       type="button"
@@ -312,9 +412,9 @@ export default function Declaration({ formData, updateFormData }: Props) {
                     <button
                       type="button"
                       onClick={handleCameraCapture}
-                      className="px-4 py-2 text-sm rounded-md bg-[#C8102E] text-white hover:bg-[#A00D24] disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      className={`px-4 py-2 text-sm rounded-md text-white disabled:bg-gray-300 disabled:cursor-not-allowed ${cameraDocKey === 'signatureVideoFootage' && isRecording ? 'bg-red-600 hover:bg-red-700' : 'bg-[#C8102E] hover:bg-[#A00D24]'}`}
                     >
-                      Capture Page
+                      {cameraDocKey === 'signatureVideoFootage' ? (isRecording ? 'Stop Recording' : 'Start Recording') : 'Capture Page'}
                     </button>
                   </div>
                 </>
@@ -329,248 +429,264 @@ export default function Declaration({ formData, updateFormData }: Props) {
             Support Documents
           </h3>
           <div className="mt-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                <p className="text-sm font-semibold text-gray-800">
-                  Required Documents
-                </p>
-                <p className="text-xs text-gray-500 flex items-center gap-2">
-                  <span className="flex items-center gap-1">
-                    <CheckCircle className="text-green-500" size={14} />
-                    Uploaded
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <XCircle className="text-red-500" size={14} />
-                    Pending
-                  </span>
-                </p>
-              </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+              <p className="text-sm font-semibold text-gray-800">
+                Required Documents
+              </p>
+              <p className="text-xs text-gray-500 flex items-center gap-2">
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="text-green-500" size={14} />
+                  Uploaded
+                </span>
+                <span className="flex items-center gap-1">
+                  <XCircle className="text-red-500" size={14} />
+                  Pending
+                </span>
+              </p>
+            </div>
 
-              {/* Desktop Table View - Hidden on Mobile */}
-              <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200 text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left font-medium text-gray-700">Document</th>
-                      <th className="px-4 py-3 text-center font-medium text-gray-700 w-24">Status</th>
-                      <th className="px-4 py-3 text-left font-medium text-gray-700">File & Upload</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100 bg-white">
-                    {activeDocs.map((doc) => {
-                      const pages = getDocPages(doc.key);
-                      const value = getFormValue(doc.key);
-                      const uploaded = pages.length > 0 || Boolean(value);
-                      return (
-                        <tr key={doc.key as string}>
-                          <td className="px-4 py-3 align-top">
-                            <div className="text-gray-900 font-medium">{doc.label}</div>
-                            {doc.helper && (
-                              <p className="text-xs text-gray-500 mt-1">{doc.helper}</p>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 align-top text-center">
-                            {uploaded ? (
-                              <CheckCircle className="text-green-500 inline-block" size={20} />
-                            ) : (
-                              <XCircle className="text-red-400 inline-block" size={20} />
-                            )}
-                          </td>
-                          <td className="px-4 py-3 align-top">
-                            <div className="space-y-2">
-                              <div>
-                                {pages.length > 0 ? (
-                                  <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
-                                    {pages.length} page(s) added
-                                  </span>
-                                ) : uploaded ? (
-                                  <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
-                                    {value}
-                                  </span>
-                                ) : (
-                                  <span className="text-xs text-gray-400 italic">No file uploaded</span>
-                                )}
-                              </div>
+            {/* Desktop Table View - Hidden on Mobile */}
+            <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200">
+              <table className="min-w-full divide-y divide-gray-200 text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700">Document</th>
+                    <th className="px-4 py-3 text-center font-medium text-gray-700 w-24">Status</th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-700">File & Upload</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 bg-white">
+                  {activeDocs.map((doc) => {
+                    const isVideoDoc = doc.key === 'signatureVideoFootage';
+                    const pages = getDocPages(doc.key);
+                    const value = getFormValue(doc.key);
+                    const uploaded = pages.length > 0 || Boolean(value);
+                    return (
+                      <tr key={doc.key as string}>
+                        <td className="px-4 py-3 align-top">
+                          <div className="text-gray-900 font-medium">{doc.label}</div>
+                          {doc.helper && (
+                            <p className="text-xs text-gray-500 mt-1">{doc.helper}</p>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 align-top text-center">
+                          {uploaded ? (
+                            <CheckCircle className="text-green-500 inline-block" size={20} />
+                          ) : (
+                            <XCircle className="text-red-400 inline-block" size={20} />
+                          )}
+                        </td>
+                        <td className="px-4 py-3 align-top">
+                          <div className="space-y-2">
+                            <div>
+                              {pages.length > 0 ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
+                                  {pages.length} {isVideoDoc ? 'video(s)' : 'page(s)'} added
+                                </span>
+                              ) : uploaded ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
+                                  {value}
+                                </span>
+                              ) : (
+                                <span className="text-xs text-gray-400 italic">No file uploaded</span>
+                              )}
+                            </div>
 
-                              <div className="flex items-center justify-start gap-2 flex-wrap">
+                            <div className="flex items-center justify-start gap-2 flex-wrap">
+                              <button
+                                type="button"
+                                onClick={() => openCamera(doc.key as keyof FormData)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                              >
+                                <Camera size={16} />
+                                Capture
+                              </button>
+
+                              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300">
+                                <FolderOpen size={16} />
+                                Upload
+                                <input
+                                  type="file"
+                                  accept={isVideoDoc ? 'video/*' : 'image/*'}
+                                  multiple={!isVideoDoc}
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    handleFileSelect(doc.key as keyof FormData, e.target.files);
+                                    e.currentTarget.value = '';
+                                  }}
+                                />
+                              </label>
+
+                              {uploaded && (
                                 <button
                                   type="button"
-                                  onClick={() => openCamera(doc.key as keyof FormData)}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                                  onClick={() => clearDocument(doc.key as keyof FormData)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
                                 >
-                                  <Camera size={16} />
-                                  Capture
+                                  <Trash2 size={16} />
+                                  Remove
                                 </button>
+                              )}
+                            </div>
 
-                                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300">
-                                  <FolderOpen size={16} />
-                                  Upload
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    multiple
-                                    className="hidden"
-                                    onChange={(e) => {
-                                      handleFileSelect(doc.key as keyof FormData, e.target.files);
-                                      e.currentTarget.value = '';
-                                    }}
-                                  />
-                                </label>
-
-                                {uploaded && (
-                                  <button
-                                    type="button"
-                                    onClick={() => clearDocument(doc.key as keyof FormData)}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
-                                  >
-                                    <Trash2 size={16} />
-                                    Remove
-                                  </button>
-                                )}
-                              </div>
-
-                              {pages.length > 0 && (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                  {pages.map((page) => (
-                                    <div key={page.id} className="flex items-center gap-2 p-2 border border-gray-200 rounded-md bg-gray-50">
+                            {pages.length > 0 && (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {pages.map((page) => (
+                                  <div key={page.id} className="flex items-center gap-2 p-2 border border-gray-200 rounded-md bg-gray-50">
+                                    {isVideoDoc ? (
+                                      <video
+                                        src={page.dataUrl}
+                                        className="w-12 h-12 rounded object-cover border border-gray-200 bg-black"
+                                      />
+                                    ) : (
                                       <img
                                         src={page.dataUrl}
                                         alt={`${doc.label} page ${page.pageNumber}`}
                                         className="w-12 h-12 rounded object-cover border border-gray-200"
                                       />
-                                      <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-medium text-gray-800 truncate">Page {page.pageNumber}</p>
-                                        <p className="text-[11px] text-gray-500 truncate">{page.name}</p>
-                                      </div>
-                                      <button
-                                        type="button"
-                                        onClick={() => removeDocumentPage(doc.key as keyof FormData, page.id)}
-                                        className="p-1.5 rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
-                                        title={`Remove page ${page.pageNumber}`}
-                                      >
-                                        <Trash2 size={14} />
-                                      </button>
+                                    )}
+                                    <div className="min-w-0 flex-1">
+                                      <p className="text-xs font-medium text-gray-800 truncate">{isVideoDoc ? `Video ${page.pageNumber}` : `Page ${page.pageNumber}`}</p>
+                                      <p className="text-[11px] text-gray-500 truncate">{page.name}</p>
                                     </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => removeDocumentPage(doc.key as keyof FormData, page.id)}
+                                      className="p-1.5 rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
+                                      title={`Remove page ${page.pageNumber}`}
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
 
-              {/* Mobile Card View - Shown only on Mobile */}
-              <div className="md:hidden space-y-3">
-                {activeDocs.map((doc) => {
-                  const pages = getDocPages(doc.key);
-                  const value = getFormValue(doc.key);
-                  const uploaded = pages.length > 0 || Boolean(value);
-                  return (
-                    <div key={doc.key as string} className="bg-white rounded-lg border border-gray-200 p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">{doc.label}</div>
-                          {doc.helper && (
-                            <p className="text-xs text-gray-500 mt-1">{doc.helper}</p>
-                          )}
-                        </div>
-                        <div className="ml-2">
-                          {uploaded ? (
-                            <CheckCircle className="text-green-500" size={20} />
-                          ) : (
-                            <XCircle className="text-red-400" size={20} />
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="mb-3">
-                        {pages.length > 0 ? (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
-                            {pages.length} page(s) added
-                          </span>
-                        ) : uploaded ? (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
-                            {value}
-                          </span>
-                        ) : (
-                          <span className="text-xs text-gray-400 italic">No file uploaded</span>
+            {/* Mobile Card View - Shown only on Mobile */}
+            <div className="md:hidden space-y-3">
+              {activeDocs.map((doc) => {
+                const isVideoDoc = doc.key === 'signatureVideoFootage';
+                const pages = getDocPages(doc.key);
+                const value = getFormValue(doc.key);
+                const uploaded = pages.length > 0 || Boolean(value);
+                return (
+                  <div key={doc.key as string} className="bg-white rounded-lg border border-gray-200 p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-900">{doc.label}</div>
+                        {doc.helper && (
+                          <p className="text-xs text-gray-500 mt-1">{doc.helper}</p>
                         )}
                       </div>
+                      <div className="ml-2">
+                        {uploaded ? (
+                          <CheckCircle className="text-green-500" size={20} />
+                        ) : (
+                          <XCircle className="text-red-400" size={20} />
+                        )}
+                      </div>
+                    </div>
 
-                      <div className="flex items-center gap-2">
+                    <div className="mb-3">
+                      {pages.length > 0 ? (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
+                          {pages.length} {isVideoDoc ? 'video(s)' : 'page(s)'} added
+                        </span>
+                      ) : uploaded ? (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs border border-green-200">
+                          {value}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-400 italic">No file uploaded</span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openCamera(doc.key as keyof FormData)}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                      >
+                        <Camera size={16} />
+                        Capture
+                      </button>
+
+                      <label className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300">
+                        <FolderOpen size={16} />
+                        Upload
+                        <input
+                          type="file"
+                          accept={isVideoDoc ? 'video/*' : 'image/*'}
+                          multiple={!isVideoDoc}
+                          className="hidden"
+                          onChange={(e) => {
+                            handleFileSelect(doc.key as keyof FormData, e.target.files);
+                            e.currentTarget.value = '';
+                          }}
+                        />
+                      </label>
+
+                      {uploaded && (
                         <button
                           type="button"
-                          onClick={() => openCamera(doc.key as keyof FormData)}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300"
+                          onClick={() => clearDocument(doc.key as keyof FormData)}
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
+                          title="Delete uploaded file"
                         >
-                          <Camera size={16} />
-                          Capture
+                          <Trash2 size={16} />
                         </button>
+                      )}
+                    </div>
 
-                        <label className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md cursor-pointer transition-colors bg-red-100 text-red-700 hover:bg-red-200 border border-red-300">
-                          <FolderOpen size={16} />
-                          Upload
-                          <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            className="hidden"
-                            onChange={(e) => {
-                              handleFileSelect(doc.key as keyof FormData, e.target.files);
-                              e.currentTarget.value = '';
-                            }}
-                          />
-                        </label>
-
-                        {uploaded && (
-                          <button
-                            type="button"
-                            onClick={() => clearDocument(doc.key as keyof FormData)}
-                            className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs rounded-md transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
-                            title="Delete uploaded file"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        )}
-                      </div>
-
-                      {pages.length > 0 && (
-                        <div className="space-y-2">
-                          {pages.map((page) => (
-                            <div key={page.id} className="flex items-center gap-2 p-2 border border-gray-200 rounded-md bg-gray-50">
+                    {pages.length > 0 && (
+                      <div className="space-y-2">
+                        {pages.map((page) => (
+                          <div key={page.id} className="flex items-center gap-2 p-2 border border-gray-200 rounded-md bg-gray-50">
+                            {isVideoDoc ? (
+                              <video
+                                src={page.dataUrl}
+                                className="w-12 h-12 rounded object-cover border border-gray-200 bg-black"
+                              />
+                            ) : (
                               <img
                                 src={page.dataUrl}
                                 alt={`${doc.label} page ${page.pageNumber}`}
                                 className="w-12 h-12 rounded object-cover border border-gray-200"
                               />
-                              <div className="min-w-0 flex-1">
-                                <p className="text-xs font-medium text-gray-800 truncate">Page {page.pageNumber}</p>
-                                <p className="text-[11px] text-gray-500 truncate">{page.name}</p>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => removeDocumentPage(doc.key as keyof FormData, page.id)}
-                                className="p-1.5 rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
-                                title={`Remove page ${page.pageNumber}`}
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-medium text-gray-800 truncate">{isVideoDoc ? `Video ${page.pageNumber}` : `Page ${page.pageNumber}`}</p>
+                              <p className="text-[11px] text-gray-500 truncate">{page.name}</p>
                             </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              <p className="text-xs text-gray-500 mt-3">
-                You can capture or upload any number of pages per document. Review page order and remove any unwanted page before submission.
-              </p>
+                            <button
+                              type="button"
+                              onClick={() => removeDocumentPage(doc.key as keyof FormData, page.id)}
+                              className="p-1.5 rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
+                              title={`Remove page ${page.pageNumber}`}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
+
+            <p className="text-xs text-gray-500 mt-3">
+              You can capture or upload any number of pages for document images. Signature video upload supports one video and replaces the previous one.
+            </p>
+          </div>
         </div>
 
         {/* Declaration Text */}
