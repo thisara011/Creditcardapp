@@ -176,7 +176,7 @@ export default function PersonalDetails({ formData, updateFormData }: Props) {
             Mobile Number <span className="text-red-500">*</span>
           </label>
 
-          <div className="flex gap-2 mb-4">
+          <div className="flex flex-col sm:flex-row gap-2 mb-4">
             <input
               type="tel"
               value={formData.mobileNumber}
@@ -187,14 +187,14 @@ export default function PersonalDetails({ formData, updateFormData }: Props) {
               }}
               disabled={formData.mobileVerified}
               placeholder="07XXXXXXXX"
-              className={`flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent ${formData.mobileVerified ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
+              className={`w-full sm:flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent ${formData.mobileVerified ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''
                 }`}
             />
             <button
               type="button"
               onClick={generateAndSendOTP}
               disabled={formData.mobileVerified || !formData.mobileNumber || otpTimer > 0}
-              className="px-4 py-2 bg-[#C8102E] text-white rounded-lg hover:bg-[#A00D24] disabled:bg-gray-300 disabled:cursor-not-allowed font-medium text-sm whitespace-nowrap"
+              className="w-full sm:w-auto px-4 py-2 bg-[#C8102E] text-white rounded-lg hover:bg-[#A00D24] disabled:bg-gray-300 disabled:cursor-not-allowed font-medium text-sm whitespace-nowrap"
             >
               {otpTimer > 0 ? `Resend (${formatTimer(otpTimer)})` : 'Send OTP'}
             </button>
@@ -209,19 +209,19 @@ export default function PersonalDetails({ formData, updateFormData }: Props) {
 
           {formData.mobileOTPSent && !formData.mobileVerified && (
             <div className="space-y-3">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   maxLength={6}
                   value={formData.mobileOTP}
                   onChange={(e) => updateFormData({ mobileOTP: e.target.value.replace(/\D/g, '') })}
                   placeholder="Enter 6-digit OTP"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent text-center text-lg tracking-widest font-mono"
+                  className="w-full sm:flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent text-center text-lg tracking-widest font-mono"
                 />
                 <button
                   type="button"
                   onClick={verifyOTP}
-                  className="px-4 py-2 bg-[#C8102E] text-white rounded-lg hover:bg-[#A00D24] font-medium text-sm"
+                  className="w-full sm:w-auto px-4 py-2 bg-[#C8102E] text-white rounded-lg hover:bg-[#A00D24] font-medium text-sm"
                 >
                   Verify
                 </button>
