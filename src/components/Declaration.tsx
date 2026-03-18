@@ -846,45 +846,48 @@ export default function Declaration({ formData, updateFormData }: Props) {
           <p className="text-sm text-gray-700 mb-4">
             Generate a unique reference number for this application. This number includes the customer's NIC for easy identification and tracking.
           </p>
-          <div className="flex gap-3 items-center">
-            <div className="flex-1">
+          <div className="space-y-3">
+            <div className="w-full">
               <input
                 type="text"
                 value={formData.applicationReferenceNumber}
                 readOnly
                 placeholder="Click 'Generate Reference' to create a reference number"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg bg-white text-gray-700 font-mono text-sm"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg bg-white text-gray-700 font-mono text-xs sm:text-sm"
               />
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                // Generate reference number format: APP-YYYY-NIC-XXXXX
-                const date = new Date();
-                const year = date.getFullYear();
-                const nic = formData.nicNumber || 'NONIC';
-                const randomSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
-                const referenceNumber = `APP-${year}-${nic}-${randomSuffix}`;
-                updateFormData({ applicationReferenceNumber: referenceNumber });
-              }}
-              className="px-6 py-3 bg-[#C8102E] text-white rounded-lg hover:bg-[#A00D24] font-medium flex items-center gap-2 whitespace-nowrap transition-colors"
-            >
-              <RefreshCw size={18} />
-              Generate Reference
-            </button>
-            {formData.applicationReferenceNumber && (
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
               <button
                 type="button"
                 onClick={() => {
-                  navigator.clipboard.writeText(formData.applicationReferenceNumber);
-                  alert('Reference number copied to clipboard!');
+                  // Generate reference number format: APP-YYYY-NIC-XXXXX
+                  const date = new Date();
+                  const year = date.getFullYear();
+                  const nic = formData.nicNumber || 'NONIC';
+                  const randomSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+                  const referenceNumber = `APP-${year}-${nic}-${randomSuffix}`;
+                  updateFormData({ applicationReferenceNumber: referenceNumber });
                 }}
-                className="px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium flex items-center gap-2 transition-colors"
-                title="Copy reference number"
+                className="w-full sm:w-auto px-6 py-3 bg-[#C8102E] text-white rounded-lg hover:bg-[#A00D24] font-medium flex items-center justify-center gap-2 whitespace-nowrap transition-colors"
               >
-                <Copy size={18} />
+                <RefreshCw size={18} />
+                Generate Reference
               </button>
-            )}
+              {formData.applicationReferenceNumber && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(formData.applicationReferenceNumber);
+                    alert('Reference number copied to clipboard!');
+                  }}
+                  className="w-full sm:w-auto px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium flex items-center justify-center gap-2 transition-colors"
+                  title="Copy reference number"
+                >
+                  <Copy size={18} />
+                  <span className="sm:hidden">Copy Reference</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
