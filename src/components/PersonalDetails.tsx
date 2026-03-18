@@ -221,7 +221,7 @@ export default function PersonalDetails({ formData, updateFormData }: Props) {
                 <button
                   type="button"
                   onClick={verifyOTP}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-sm"
+                  className="px-4 py-2 bg-[#C8102E] text-white rounded-lg hover:bg-[#A00D24] font-medium text-sm"
                 >
                   Verify
                 </button>

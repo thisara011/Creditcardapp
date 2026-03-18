@@ -1,4 +1,4 @@
-import { Camera, CheckCircle, FileText, FolderOpen, SwitchCamera, Trash2, XCircle } from 'lucide-react';
+import { Camera, CheckCircle, Copy, FileText, FolderOpen, RefreshCw, SwitchCamera, Trash2, XCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { DocumentPage, FormData } from '../App';
 
@@ -837,6 +837,57 @@ export default function Declaration({ formData, updateFormData }: Props) {
           </div>
         )}
 
+        {/* Application Reference Number */}
+        <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-300 mb-6">
+          <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <FileText size={20} className="text-[#C8102E]" />
+            Application Reference Number
+          </h4>
+          <p className="text-sm text-gray-700 mb-4">
+            Generate a unique reference number for this application. This number includes the customer's NIC for easy identification and tracking.
+          </p>
+          <div className="flex gap-3 items-center">
+            <div className="flex-1">
+              <input
+                type="text"
+                value={formData.applicationReferenceNumber}
+                readOnly
+                placeholder="Click 'Generate Reference' to create a reference number"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg bg-white text-gray-700 font-mono text-sm"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                // Generate reference number format: APP-YYYY-NIC-XXXXX
+                const date = new Date();
+                const year = date.getFullYear();
+                const nic = formData.nicNumber || 'NONIC';
+                const randomSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+                const referenceNumber = `APP-${year}-${nic}-${randomSuffix}`;
+                updateFormData({ applicationReferenceNumber: referenceNumber });
+              }}
+              className="px-6 py-3 bg-[#C8102E] text-white rounded-lg hover:bg-[#A00D24] font-medium flex items-center gap-2 whitespace-nowrap transition-colors"
+            >
+              <RefreshCw size={18} />
+              Generate Reference
+            </button>
+            {formData.applicationReferenceNumber && (
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(formData.applicationReferenceNumber);
+                  alert('Reference number copied to clipboard!');
+                }}
+                className="px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium flex items-center gap-2 transition-colors"
+                title="Copy reference number"
+              >
+                <Copy size={18} />
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Authorized Officer Declaration */}
         <div className="bg-gray-50 p-6 rounded-lg border-2 border-gray-300">
           <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -847,37 +898,18 @@ export default function Declaration({ formData, updateFormData }: Props) {
             I, as the Authorized Officer of the bank have carefully examined the information together with relevant documents given by the applicant/s and satisfied with the bona-fide of these information and documents. Further, I as the Authorized Officer of the bank undertake at all times, to exercise due diligence on the transactions carried out by the cardholder on his / her EFTC in foreign exchange and to suspend the availability of foreign exchange on the EFTC if reasonable grounds exist to suspect that foreign exchange transactions which are not permitted in terms of Directions No. 03 of 2021 dated 18 March 2021 issued under the provisions of the Foreign Exchange Act, No. 12 of 2017 are being carried out on the EFTC, in violation of the undertaking given by the card holders and to bring the matter to the attention of the Director - Department of Foreign Exchange.
           </p>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Authorised Officer Signature <span className="text-red-500">*</span>
+            <div className="flex items-start gap-3 p-4 bg-white border border-gray-300 rounded-lg">
+              <input
+                type="checkbox"
+                id="authorizedOfficerConsent"
+                checked={formData.authorizedOfficerConsent || false}
+                onChange={(e) => updateFormData({ authorizedOfficerConsent: e.target.checked })}
+                className="mt-1 w-5 h-5 accent-[#C8102E] rounded"
+                aria-label="Authorized Officer Consent"
+              />
+              <label htmlFor="authorizedOfficerConsent" className="text-sm text-gray-700 cursor-pointer">
+                I have reviewed all documents and I authorize this credit card application <span className="text-red-500">*</span>
               </label>
-              <input
-                type="file"
-                accept="image/*,.pdf"
-                aria-label="Authorised Officer Signature File"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    const file = e.target.files[0];
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      updateFormData({ authorizedOfficerSignatureUpload: reader.result as string });
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-              />
-              <p className="text-xs text-gray-500 mt-1">Upload signature document (image or PDF)</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Date <span className="text-red-500">*</span></label>
-              <input
-                type="date"
-                aria-label="Authorised Officer Signature Date"
-                value={formData.authorizedOfficerDate}
-                onChange={(e) => updateFormData({ authorizedOfficerDate: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
-              />
             </div>
           </div>
         </div>

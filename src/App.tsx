@@ -185,6 +185,8 @@ export interface FormData {
   suppSignatureDate: string;
   authorizedOfficerSignature: string;
   authorizedOfficerDate: string;
+  authorizedOfficerConsent: boolean;
+  applicationReferenceNumber: string;
 }
 
 export default function App() {
@@ -331,6 +333,8 @@ export default function App() {
     suppSignatureDate: new Date().toLocaleDateString('en-GB'),
     authorizedOfficerSignature: '',
     authorizedOfficerDate: new Date().toLocaleDateString('en-GB'),
+    authorizedOfficerConsent: false,
+    applicationReferenceNumber: '',
   });
 
   const totalSteps = 6;
