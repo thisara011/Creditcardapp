@@ -86,6 +86,29 @@ export interface FormData {
   isPEP: string;
   isPEPRelated: string;
   pepNatureOfRelationship: string;
+  pepApplicationType: 'New Card' | 'Limit Enhancement' | '';
+  pepCardNumber: string;
+  pepFullName: string;
+  pepNIC: string;
+  pepAddress: string;
+  pepPositionHeld: string;
+  pepEntityName: string;
+  pepYearsInPosition: string;
+  pepSourceOfWealth: string;
+  pepSourceOfWealthOther: string;
+  pepEstimatedWealth: string;
+  pepEstimatedWealthOther: string;
+  pepApplicantSignature: string;
+  pepAuthorizedEmployeeNumber: string;
+  pepAuthorizedSignature: string;
+  pepBankUseCategory: string;
+  pepBankUseStaffName: string;
+  pepBankUseStaffNumber: string;
+  pepBankUseDesignation: string;
+  pepBankUseRecommendation: string;
+  pepBankUseBranchDecision: string;
+  pepBankUseSmgDecision: string;
+  pepBankUseDgmDecision: string;
   pepFormUpload: string;
   requiresEDD: string;
   eddFormUpload: string;
@@ -252,6 +275,29 @@ export default function App() {
     isPEP: '',
     isPEPRelated: '',
     pepNatureOfRelationship: '',
+    pepApplicationType: '',
+    pepCardNumber: '',
+    pepFullName: '',
+    pepNIC: '',
+    pepAddress: '',
+    pepPositionHeld: '',
+    pepEntityName: '',
+    pepYearsInPosition: '',
+    pepSourceOfWealth: '',
+    pepSourceOfWealthOther: '',
+    pepEstimatedWealth: '',
+    pepEstimatedWealthOther: '',
+    pepApplicantSignature: '',
+    pepAuthorizedEmployeeNumber: '',
+    pepAuthorizedSignature: '',
+    pepBankUseCategory: '',
+    pepBankUseStaffName: '',
+    pepBankUseStaffNumber: '',
+    pepBankUseDesignation: '',
+    pepBankUseRecommendation: '',
+    pepBankUseBranchDecision: '',
+    pepBankUseSmgDecision: '',
+    pepBankUseDgmDecision: '',
     pepFormUpload: '',
     requiresEDD: '',
     eddFormUpload: '',
