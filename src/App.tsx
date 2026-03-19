@@ -67,6 +67,7 @@ export interface FormData {
   designation: string;
   designationOther: string;
   lengthOfEmployment: number;
+  employmentStatus: string;
   employerName: string;
   employerAddress: string;
   officeContactNumber: string;
@@ -234,6 +235,7 @@ export default function App() {
     designation: '',
     designationOther: '',
     lengthOfEmployment: 0,
+    employmentStatus: '',
     employerName: '',
     employerAddress: '',
     officeContactNumber: '',

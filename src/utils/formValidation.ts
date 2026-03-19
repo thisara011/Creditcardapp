@@ -34,6 +34,7 @@ const REQUIRED_FIELDS: RequiredField[] = [
     { key: 'educationLevel', label: 'Education Level', step: 3 },
     { key: 'designation', label: 'Current Position/Designation', step: 3 },
     { key: 'lengthOfEmployment', label: 'Length of Employment', step: 3 },
+    { key: 'employmentStatus', label: 'Employment Status', step: 3 },
     { key: 'employerName', label: 'Employer Name', step: 3 },
     { key: 'employerAddress', label: 'Employer Address', step: 3 },
     { key: 'officeContactNumber', label: 'Office Contact Number', step: 3 },

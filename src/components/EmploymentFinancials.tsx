@@ -39,6 +39,13 @@ const positions = [
   'Others'
 ];
 
+const employmentStatuses = [
+  'Perment',
+  'Probation',
+  'Contract',
+  'Daily Wage erner'
+];
+
 const residenceTypes = [
   'Own (Not Mortgaged)',
   'Own (Mortgaged)',
@@ -341,6 +348,24 @@ export default function EmploymentFinancials({ formData, updateFormData }: Props
           <p className="text-xs text-gray-500 mt-1">
             If you have worked less than 1 year here, previous employment details will be required.
           </p>
+        </div>
+
+        {/* Employment Status */}
+        <div>
+          <label htmlFor="employment-status" className="block text-sm font-medium text-gray-700 mb-2">
+            Employment Status <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="employment-status"
+            value={formData.employmentStatus}
+            onChange={(e) => updateFormData({ employmentStatus: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+          >
+            <option value="">Select Employment Status</option>
+            {employmentStatuses.map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
         </div>
 
         {/* Previous Employment (if < 1 year) */}
